@@ -7,7 +7,7 @@ cd ./build
 cmake --build . --target clean
 
 # Invoke CMake.
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 
 # Make the required example.
-make
+cmake --build .

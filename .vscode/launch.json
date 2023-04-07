@@ -1,0 +1,49 @@
+/* Launch configuration.
+ * Source: https://github.com/haneefdm/cortex-debug-samples/blob/master/blink2/.vscode/launch.json
+ */
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/build/examples/basic_example/main.elf", /* Path to the executable, CHANGE THIS FOR DIFFERENT EXAMPLES! */
+            "name": "Raspberry Pi Pico - OpenOCD",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd", /* Use OpenOCD. */
+            "device": "Pico2040",    /* Target Pico. */
+            "interface": "swd",
+            "configFiles": [
+                /* See https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html. */
+                "interface/cmsis-dap.cfg",
+                "target/rp2040.cfg"
+            ],
+            "searchDir": [
+                "../openocd/tcl" /* This should point to the tcl directory, change this for your system! */
+            ],
+            "preLaunchCommands": [
+                "set mem inaccessible-by-default off",
+                "set verbose on"
+            ],
+            "postLaunchCommands": [
+                "monitor reset run",
+                "monitor sleep 200",
+                "monitor psoc6 reset_halt sysresetreq"
+            ],
+            "postRestartCommands": [
+                "monitor psoc6 reset_halt sysresetreq",
+                /*
+                // Following two commands are needed to get gdb and openocd and HW all in sync.
+                // Or, execution context (PC, stack, registers, etc.) look like they are from before reset.
+                // The stepi, is a pretend instruction that does not actually do a stepi, but MUST be done
+                // Its a documented workaround in openocd. Do a 'monitor help' to see more info
+                */
+                "monitor gdb_sync",
+                "stepi"
+            ],
+            "runToEntryPoint": "main", /* Stop when entering main function. */
+            "showDevDebugOutput": "vscode",
+            "svdFile": "${workspaceRoot}/rp2040.svd" /* Use SVD file for showing peripheral status. */
+        }
+    ]
+}

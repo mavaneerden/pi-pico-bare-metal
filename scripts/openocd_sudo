@@ -1,0 +1,2 @@
+# Allow OpenOCD to execute as super user.
+sudo /usr/local/bin/openocd "$@"
