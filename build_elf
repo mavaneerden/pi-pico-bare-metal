@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Change to out-of-source build directory.
+cd ./build
+
+# Clean build directory.
+cmake --build . --target clean
+
+# Invoke CMake.
+cmake ..
+
+# Make the required example.
+make

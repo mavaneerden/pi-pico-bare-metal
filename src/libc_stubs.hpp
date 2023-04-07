@@ -1,7 +1,4 @@
-int main()
-{
-    return 0;
-}
+#pragma once
 
 /* Stub implementations from https://sourceware.org/newlib/libc.html#Stubs. */
 extern "C" { /* Necessary to avoid function name mangling. */
