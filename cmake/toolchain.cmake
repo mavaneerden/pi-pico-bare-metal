@@ -16,7 +16,7 @@ set(CMAKE_RANLIB                    ${TOOLCHAIN_PATH}/arm-none-eabi-ranlib${CMAK
 set(CMAKE_SIZE                      ${TOOLCHAIN_PATH}/arm-none-eabi-size${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 set(CMAKE_STRIP                     ${TOOLCHAIN_PATH}/arm-none-eabi-strip${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 
-set(CMAKE_C_FLAGS "--specs=nosys.specs -mthumb")
+set(CMAKE_C_FLAGS "--specs=nosys.specs -mthumb -Wall -u interrupt_vector_table")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 # adjust the default behavior of the FIND_XXX() commands:
