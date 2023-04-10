@@ -16,8 +16,14 @@ set(CMAKE_RANLIB                    ${TOOLCHAIN_PATH}/arm-none-eabi-ranlib${CMAK
 set(CMAKE_SIZE                      ${TOOLCHAIN_PATH}/arm-none-eabi-size${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 set(CMAKE_STRIP                     ${TOOLCHAIN_PATH}/arm-none-eabi-strip${CMAKE_EXECUTABLE_SUFFIX} CACHE INTERNAL "")
 
-set(CMAKE_C_FLAGS "--specs=nosys.specs -mthumb -Wall -u interrupt_vector_table")
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
+# Compiler flags: https://interrupt.memfault.com/blog/best-and-worst-gcc-clang-compiler-flags
+set(CMAKE_C_FLAGS "--specs=nosys.specs -mthumb -Wall -Wextra -Wshadow -Wundef -Wconversion -W -g3 -u interrupt_vector_table -O0 -fstack-usage -ffreestanding -fno-common -ffunction-sections -fdata-sections -nostartfiles -Wl,--gc-sections -Wl,-static -Wl,-Map=main.map -T ${LINKER_SCRIPT}") # -nostdlib -nostdinc
+# Explanation of C++ flags:
+# - Add all C flags.
+# - Use -fno-exceptions to disable exception generating code. This is already the default for C sources.
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fno-exceptions")
+
+set(CMAKE_Link_FLAG)
 
 # adjust the default behavior of the FIND_XXX() commands:
 # search programs in the host environment

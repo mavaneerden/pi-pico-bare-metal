@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [[ $1 != "Debug" && $1 != "Release" ]]; then
+    echo "First argument must be 'Debug' or 'Release'."
+    exit
+fi
+
+# Change to out-of-source build directory.
+cd ./build
+echo "*** Building executables using CMake..."
+
+# Clean build directory.
+cmake --build . --target clean
+
+# Invoke CMake.
+cmake -DCMAKE_BUILD_TYPE=$1 ..
+
+# Make all examples.
+cmake --build .
+
+# Make the script that adds the CRC to the executables.
+cd ../scripts/add_crc
+echo -e "\n*** Making bin2uf2 script..."
+make
+
+# Go back to build directory.
+cd ../../build
+
+# Add a CRC to the flash second stage of all generated executables.
+echo -e "\n*** Adding CRCs to all generated ELF files..."
+for path in `find . -name "*.elf" -type f`; do
+    ../scripts/add_crc/bin2uf2 -u -i $path -o $path
+done

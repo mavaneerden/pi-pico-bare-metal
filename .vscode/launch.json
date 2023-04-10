@@ -19,19 +19,23 @@
                 "target/rp2040.cfg"
             ],
             "searchDir": [
-                "../openocd/tcl" /* This should point to the tcl directory, change this for your system! */
+                "${workspaceRoot}/../openocd/tcl" /* This should point to the tcl directory, change this for your system! */
+            ],
+            "openOCDLaunchCommands": [
+                "adapter speed 5000"
             ],
             "preLaunchCommands": [
                 "set mem inaccessible-by-default off",
-                "set verbose on"
+                "set verbose on",
+                "load"
             ],
             "postLaunchCommands": [
                 "monitor reset run",
                 "monitor sleep 200",
-                "monitor psoc6 reset_halt sysresetreq"
+                // "monitor psoc6 reset_halt sysresetreq"
             ],
             "postRestartCommands": [
-                "monitor psoc6 reset_halt sysresetreq",
+                // "monitor psoc6 reset_halt sysresetreq",
                 /*
                 // Following two commands are needed to get gdb and openocd and HW all in sync.
                 // Or, execution context (PC, stack, registers, etc.) look like they are from before reset.

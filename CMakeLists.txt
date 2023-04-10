@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 3.22.1) # Require minimum version to avoid proble
 
 ##### SPECIFY DIRECTORIES #####
 set(LIB_SRC_DIR ${CMAKE_SOURCE_DIR}/src) # Specify library source directory.
-set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include) # Specify library include directory.
-set(EXAMPLES_DIR ${CMAKE_SOURCE_DIR}/examples) # Specify library include directory.
-set(CMAKE_DIR ${CMAKE_SOURCE_DIR}/cmake) # Specify library include directory.
+set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include) # Specify library source directory.
+set(EXAMPLES_DIR ${CMAKE_SOURCE_DIR}/examples) # Specify examples directory.
+set(CMAKE_DIR ${CMAKE_SOURCE_DIR}/cmake) # Specify cmake directory.
+set(LINKER_DIR ${CMAKE_SOURCE_DIR}/linker) # Specify linker directory.
+
+set(LINKER_SCRIPT ${LINKER_DIR}/rp2040_linker_script.ld)
 
 ##### SPECIFY TOOLCHAIN FILE #####
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_DIR}/toolchain.cmake) # Set toolchain file to define compiler settings.
