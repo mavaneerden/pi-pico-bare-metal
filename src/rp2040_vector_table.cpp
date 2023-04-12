@@ -44,10 +44,11 @@
 /* Reset value of the Main Stack Pointer (MSP). See Table B3-1 in the ARMv6-M Architecture Reference manual. */
 constexpr uint32_t SP_main = 0x40000000u;
 
+#ifdef __cplusplus
+extern "C" { /* Required to avoid name mangling. */
+#endif
 
 /******** CORTEX M0+ INTERRUPT HANDLERS ********/
-extern "C" { /* Necessary to avoid name mangling. */
-
 /**
  * Default interrupt handler. Called whenever an interrupt happens and
  * it is not overwritten. Enters an infinite hold.
@@ -181,4 +182,7 @@ const volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribut
     (void*) &I2C1_IRQ_handler,
     (void*) &RTC_IRQ_handler
 };
+
+#ifdef __cplusplus
 }
+#endif
