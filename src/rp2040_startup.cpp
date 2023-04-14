@@ -24,6 +24,9 @@ extern int main(void);
 extern "C" {
 #endif
 
+#define PUT32(address,value)  (*((volatile unsigned int*)address))=value
+#define GET32(address) *(volatile unsigned int*)address
+
 /**
  * RP2040 second stage boot loader.
  * Performs the following functions:
@@ -35,45 +38,59 @@ extern "C" {
  */
 __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_flash_second_stage(void)
 {
-    // TODO: configure XIP
+    unsigned int a = 0;
+    PUT32( 0x4000f000, ( 1 << 5 ) );               // IO BANK
+
+    while ( (GET32( 0x4000c008 ) & ( 1<< 5 )) == 0 );  // Reset Done?
+
+    PUT32( 0x400140cc, 0x05 );                     // IO PAD = FUNC 5 (GPIO)
+    PUT32( 0xd0000020, ( 1 << 25 ) );              // GPIO_OE
+
+    while( 1 )
+    {
+            PUT32( 0xd000001c, ( 1 << 25 ) );      // XOR GPIO
+            for (a = 200000; a > 0; a-- );
+    }
 
     /***** Copy .text section from flash to SRAM. *****/
-    uint32_t section_size = &__text_end__ - &__text_start__;
-    uint32_t *source_ptr = (uint32_t*) &__flash_text_start__;
-    uint32_t *destination_ptr = (uint32_t*) &__text_start__;
+    // uint32_t section_size = &__text_end__ - &__text_start__;
+    // uint32_t *source_ptr = (uint32_t*) &__flash_text_start__;
+    // uint32_t *destination_ptr = (uint32_t*) &__text_start__;
 
-    // TODO: use pico ROM memcpy.
-    for (uint32_t i = 0; i < section_size; i++)
-    {
-        *destination_ptr++ = *source_ptr++;
-    }
+    // // TODO: use pico ROM memcpy.
+    // for (uint32_t i = 0; i < section_size; i++)
+    // {
+    //     *destination_ptr++ = *source_ptr++;
+    // }
 
-    /***** Copy .data section from flash to SRAM. *****/
-    section_size = &__data_end__ - &__data_start__;
-    source_ptr = (uint32_t*) &__flash_data_start__;
-    destination_ptr = (uint32_t*) &__data_start__;
+    // /***** Copy .data section from flash to SRAM. *****/
+    // section_size = &__data_end__ - &__data_start__;
+    // source_ptr = (uint32_t*) &__flash_data_start__;
+    // destination_ptr = (uint32_t*) &__data_start__;
 
-    // TODO: use pico ROM memcpy.
-    for (uint32_t i = 0; i < section_size; i++)
-    {
-        *destination_ptr++ = *source_ptr++;
-    }
+    // // TODO: use pico ROM memcpy.
+    // for (uint32_t i = 0; i < section_size; i++)
+    // {
+    //     *destination_ptr++ = *source_ptr++;
+    // }
 
-    /***** Initialise .bss section to 0. *****/
-    section_size = &__bss_end__ - &__bss_start__;
-    destination_ptr = (uint32_t*) &__bss_start__;
+    // /***** Initialise .bss section to 0. *****/
+    // section_size = &__bss_end__ - &__bss_start__;
+    // destination_ptr = (uint32_t*) &__bss_start__;
 
-    // TODO: use pico ROM memset.
-    for (uint32_t i = 0; i < section_size; i++)
-    {
-        *destination_ptr++ = 0;
-    }
+    // // TODO: use pico ROM memset.
+    // for (uint32_t i = 0; i < section_size; i++)
+    // {
+    //     *destination_ptr++ = 0;
+    // }
 
     /* Call main. */
     // main();
 
-    /* Unreachable code as main always loops. */
-    // __builtin_unreachable();
+    // while (1);
+
+    /* Unreachable code as main always loops. Similar to noreturn. */
+    __builtin_unreachable();
 }
 
 #ifdef __cplusplus
