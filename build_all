@@ -18,16 +18,29 @@ cmake -DCMAKE_BUILD_TYPE=$1 ..
 # Make all examples.
 cmake --build .
 
-# Make the script that adds the CRC to the executables.
-cd ../scripts/add_crc
-echo -e "\n*** Making bin2uf2 script..."
-make
-
-# Go back to build directory.
+# Compile elf2uf2 script.
+cd ../scripts/elf2uf2/
+./compile_elf2uf2.sh
 cd ../../build
 
-# Add a CRC to the flash second stage of all generated executables.
-echo -e "\n*** Adding CRCs to all generated ELF files..."
+# Process every generated ELF file.
 for path in `find . -name "*.elf" -type f`; do
-    ../scripts/add_crc/bin2uf2 -u -i $path -o $path
+    croppedpath=${path%.elf}
+    uf2file="$croppedpath.uf2"
+    disfile="$croppedpath.dis"
+
+    # Separator.
+    echo -e "\n****** Processing file $path ******"
+
+    # Add a CRC to the flash second stage.
+    echo "*** Adding second stage boot CRC ***"
+    python3 ../scripts/add_crc_to_elf.py $path
+
+    # Generate a UF2 file.
+    echo "*** Generating UF2 file ***"
+    ../scripts/elf2uf2/elf2uf2 -v $path "$uf2file"
+
+    # Generate a disassembly file.
+    echo "*** Generating disassembly file ***"
+    arm-none-eabi-objdump -S $path > "$disfile"
 done

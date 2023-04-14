@@ -36,20 +36,6 @@ SECTIONS
         . = ALIGN(4);
     }> Flash
 
-    /* XIP peripheral registers. */
-    .registers.xip :
-    {
-        *(.registers.xip*)
-        . = ALIGN(4);
-    }> XIP
-
-    /* SSI peripheral registers. */
-    .registers.ssi :
-    {
-        *(.registers.ssi*)
-        . = ALIGN(4);
-    }> SSI
-
     /* Section for executable code. Copied from flash to SRAM by the second stage boot loader. */
     /* TODO: keep this in flash. */
     .text :
