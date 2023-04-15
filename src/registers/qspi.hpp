@@ -1,18 +1,27 @@
+/**
+ * Author:
+ *   Marco van Eerden
+ * Description:
+ */
+
 #pragma once
 
 #include <stdint.h>
 
+// TODO: documentation
+// TODO: unions!
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* PADS_QSPI drive strength. See section 2.19.6.4 in the RP2040 datasheet. */
-constexpr uint8_t PADS_QSPI_DRIVE_2mA = 0x0;
-constexpr uint8_t PADS_QSPI_DRIVE_4mA = 0x1;
-constexpr uint8_t PADS_QSPI_DRIVE_8mA = 0x2;
-constexpr uint8_t PADS_QSPI_DRIVE_12mA = 0x3;
-// enum PADS_QSPI_DRIVE : uint8_t {
-//     PADS_QSPI_DRIVE_2mA = 0x0,
-//     PADS_QSPI_DRIVE_4mA = 0x1,
-//     PADS_QSPI_DRIVE_8mA = 0x2,
-//     PADS_QSPI_DRIVE_12mA = 0x3
-// };
+enum PADS_QSPI_DRIVE : uint8_t {
+    PADS_QSPI_DRIVE_2mA = 0x0,
+    PADS_QSPI_DRIVE_4mA = 0x1,
+    PADS_QSPI_DRIVE_8mA = 0x2,
+    PADS_QSPI_DRIVE_12mA = 0x3
+};
 
 struct PADS_QSPI_struct
 {
@@ -61,3 +70,7 @@ struct PADS_QSPI_struct
 };
 
 volatile struct PADS_QSPI_struct PADS_QSPI __attribute__((section(".registers.pads_qspi")));
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif

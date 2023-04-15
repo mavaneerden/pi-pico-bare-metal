@@ -30,11 +30,25 @@ SECTIONS
         . = ALIGN(4); /* Word alignment after section (not necessary as this section is always 256 bytes and starts at an already aligned address). */
     }> Flash_second_stage AT> Flash_second_stage
 
-    .flash_second_stage_helpers :
+    /* .flash_second_stage_helpers :
     {
-        KEEP(*(.flash_second_stage.program_status_register))
+        KEEP(*(.vector_table))
         . = ALIGN(4);
-    }> Flash
+    }> Flash */
+
+    /* XIP peripheral registers. */
+    .registers.xip :
+    {
+        *(.registers.xip*)
+        . = ALIGN(4);
+    }> XIP
+
+    /* SSI peripheral registers. */
+    .registers.ssi :
+    {
+        *(.registers.ssi*)
+        . = ALIGN(4);
+    }> SSI
 
     /* Section for executable code. Copied from flash to SRAM by the second stage boot loader. */
     /* TODO: keep this in flash. */
@@ -42,6 +56,7 @@ SECTIONS
     {
         __text_start__ = .;
         KEEP(*(.vector_table)) /* Interrupt vector table. Use KEEP to avoid dumping this section if it isn't used. */
+        KEEP(*(.text.main))
         *(.text .text.*)
         *(.rodata .rodata.*)
         . = ALIGN(4); /* Word alignment after section. */

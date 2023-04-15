@@ -65,18 +65,39 @@ typedef std::vector<address_range> address_ranges;
 #define MAIN_RAM_START        0x20000000u // same as SRAM_BASE in addressmap.h
 #define MAIN_RAM_END          0x20042000u // same as SRAM_END in addressmap.h
 #define FLASH_START           0x10000000u // same as XIP_MAIN_BASE in addressmap.h
-#define FLASH_END             0x15000000u
+#define FLASH_END             0x10200000u
+#define XIP_CTRL_START        0x14000000u
+#define XIP_CTRL_END          0x14000020u
+#define XIP_SSI_START         0x18000000u
+#define XIP_SSI_END           0x180000FCu
 #define XIP_SRAM_START        0x15000000u // same as XIP_SRAM_BASE in addressmap.h
 #define XIP_SRAM_END          0x15004000u // same as XIP_SRAM_END in addressmap.h
 #define MAIN_RAM_BANKED_START 0x21000000u // same as SRAM0_BASE in addressmap.h
 #define MAIN_RAM_BANKED_END   0x21040000u
 #define ROM_START             0x00000000u // same as ROM_BASE in addressmap.h
 #define ROM_END               0x00004000u
+#define APB_PERIPH_START      0x40000000u
+#define APB_PERIPH_END        0x4006C004u
+#define DMA_START             0x50000000u
+#define DMA_END               0x50000ac8u
+#define USBCTRL_START         0x50100000u
+#define USBCTRL_END           0x5010009cu
+#define PIO_START             0x50200000u
+#define PIO_END               0x50300144u
+#define PPB_BASE_START        0xe0000000u
+#define PPB_BASE_END          0xe000eda4u
 
 const address_ranges rp2040_address_ranges_flash {
     address_range(FLASH_START, FLASH_END, address_range::type::CONTENTS),
     address_range(MAIN_RAM_START, MAIN_RAM_END, address_range::type::NO_CONTENTS),
-    address_range(MAIN_RAM_BANKED_START, MAIN_RAM_BANKED_END, address_range::type::NO_CONTENTS)
+    address_range(MAIN_RAM_BANKED_START, MAIN_RAM_BANKED_END, address_range::type::NO_CONTENTS),
+    address_range(XIP_CTRL_START, XIP_CTRL_END, address_range::type::CONTENTS),
+    address_range(XIP_SSI_START, XIP_SSI_END, address_range::type::CONTENTS),
+    address_range(APB_PERIPH_START, APB_PERIPH_END, address_range::type::CONTENTS),
+    address_range(DMA_START, DMA_END, address_range::type::CONTENTS),
+    address_range(USBCTRL_START, USBCTRL_END, address_range::type::CONTENTS),
+    address_range(PIO_START, PIO_END, address_range::type::CONTENTS),
+    address_range(PPB_BASE_START, PPB_BASE_END, address_range::type::CONTENTS),
 };
 
 const address_ranges rp2040_address_ranges_ram {
@@ -140,6 +161,7 @@ int check_address_range(const address_ranges& valid_ranges, uint32_t addr, uint3
         }
     }
     return fail(ERROR_INCOMPATIBLE, "Memory segment %08x->%08x is outside of valid address range for device", addr, addr+size);
+    // return 0;
 }
 
 int read_elf32_ph_entries(FILE *in, const elf32_header &eh, std::vector<elf32_ph_entry>& entries) {

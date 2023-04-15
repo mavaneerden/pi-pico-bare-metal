@@ -18,31 +18,8 @@
  */
 #define DEFAULT_HANDLER_ATTRIBUTE __attribute__((weak, used, noreturn, alias("default_handler"), interrupt("IRQ")))
 
-// /* Number of IRQs on the RP2040. See RP2040 data sheet, section 2.3.2.
-//  * The RP2040 supports all 32 possible external interrupts by setting values in the NVIC, but only 26 are actually implemented in the hardware.
-//  */
-// constexpr uint8_t RP2040_NUM_INTERRUPTS = 26u;
-
-// /* Interrupt vector size.
-//  * See https://developer.arm.com/documentation/dui0662/b/The-Cortex-M0--Processor/Exception-model/Vector-table.
-//  */
-// constexpr uint8_t CORTEX_M0PLUS_INTERRUPT_VECTOR_SIZE = 0x4u;
-
-// /* Initial size of vector table, includes all negative IRQ numbered exceptions.
-//  * See https://developer.arm.com/documentation/dui0662/b/The-Cortex-M0--Processor/Exception-model/Vector-table.
-//  */
-// constexpr uint8_t CORTEX_M0PLUS_VECTOR_TABLE_INITIAL_SIZE = 0x40u;
-
-// /* Vector table start address.
-//  * See https://developer.arm.com/documentation/dui0662/b/The-Cortex-M0--Processor/Exception-model/Vector-table.
-//  */
-// constexpr uint32_t CORTEX_M0PLUS_VECTOR_TABLE_ADDRESS_START = 0x00000000u;
-
-// /* Calculated vector table size. */
-// constexpr uint8_t RP2040_VECTOR_TABLE_SIZE = CORTEX_M0PLUS_VECTOR_TABLE_INITIAL_SIZE + (CORTEX_M0PLUS_INTERRUPT_VECTOR_SIZE * RP2040_NUM_INTERRUPTS);
-
-/* Reset value of the Main Stack Pointer (MSP). See Table B3-1 in the ARMv6-M Architecture Reference manual. */
-constexpr uint32_t SP_main = 0x40000000u;
+/* Pointer to the top of the stack. */
+extern uint32_t __stack_0_top__;
 
 #ifdef __cplusplus
 extern "C" { /* Required to avoid name mangling. */
@@ -138,8 +115,8 @@ void RTC_IRQ_handler(void) DEFAULT_HANDLER_ATTRIBUTE;
  * We add it to its own section so we can link it later. This is not strictly necessary because the
  * VTOR register contains the address of the interrupt vector table: it does not need to be in a specific place.
  */
-const volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribute__((section(".vector_table"))) = {
-    (void*) SP_main,
+volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribute__((section(".vector_table"))) = {
+    (void*) &__stack_0_top__,
     (void*) &Reset_handler,
     (void*) &NMI_handler,
     (void*) &HardFault_handler,

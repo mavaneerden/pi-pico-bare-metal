@@ -16,4 +16,4 @@ constexpr uint8_t CORTEX_M0PLUS_DEFAULT_VECTOR_TABLE_SIZE = 15u;
 constexpr uint8_t RP2040_VECTOR_TABLE_SIZE = 1u + CORTEX_M0PLUS_DEFAULT_VECTOR_TABLE_SIZE + RP2040_NUM_INTERRUPTS;
 
 /* Make vector table visible for startup file. */
-extern "C" const volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE];
+extern "C" volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE];
