@@ -7,6 +7,7 @@
         {
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/examples/basic_example/main.elf", /* Path to the executable, CHANGE THIS FOR DIFFERENT EXAMPLES! */
+            // "executable": "/home/marco/Documents/pi/pico/pico-examples/build/blink/blink.elf",
             "name": "Raspberry Pi Pico - OpenOCD",
             "request": "launch",
             "type": "cortex-debug",
@@ -19,19 +20,23 @@
                 "target/rp2040.cfg"
             ],
             "searchDir": [
-                "../openocd/tcl" /* This should point to the tcl directory, change this for your system! */
+                "${workspaceRoot}/../openocd/tcl" /* This should point to the tcl directory, change this for your system! */
+            ],
+            "openOCDLaunchCommands": [
+                "adapter speed 2500"
             ],
             "preLaunchCommands": [
                 "set mem inaccessible-by-default off",
-                "set verbose on"
+                "set verbose on",
+                "load"
             ],
-            "postLaunchCommands": [
-                "monitor reset run",
-                "monitor sleep 200",
-                "monitor psoc6 reset_halt sysresetreq"
-            ],
+            // "postLaunchCommands": [
+            //     "monitor sleep 200",
+            //     "continue"
+            //     // "monitor psoc6 reset_halt sysresetreq"
+            // ],
             "postRestartCommands": [
-                "monitor psoc6 reset_halt sysresetreq",
+                // "monitor psoc6 reset_halt sysresetreq",
                 /*
                 // Following two commands are needed to get gdb and openocd and HW all in sync.
                 // Or, execution context (PC, stack, registers, etc.) look like they are from before reset.

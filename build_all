@@ -1,0 +1,46 @@
+#!/bin/bash
+
+if [[ $1 != "Debug" && $1 != "Release" ]]; then
+    echo "First argument must be 'Debug' or 'Release'."
+    exit
+fi
+
+# Change to out-of-source build directory.
+cd ./build
+echo "*** Building executables using CMake..."
+
+# Clean build directory.
+cmake --build . --target clean
+
+# Invoke CMake.
+cmake -DCMAKE_BUILD_TYPE=$1 ..
+
+# Make all examples.
+cmake --build .
+
+# Compile elf2uf2 script.
+cd ../scripts/elf2uf2/
+./compile_elf2uf2.sh
+cd ../../build
+
+# Process every generated ELF file.
+for path in `find . -name "*.elf" -type f`; do
+    croppedpath=${path%.elf}
+    uf2file="$croppedpath.uf2"
+    disfile="$croppedpath.dis"
+
+    # Separator.
+    echo -e "\n****** Processing file $path ******"
+
+    # Add a CRC to the flash second stage.
+    echo "*** Adding second stage boot CRC ***"
+    python3 ../scripts/add_crc_to_elf.py $path
+
+    # Generate a UF2 file.
+    echo "*** Generating UF2 file ***"
+    ../scripts/elf2uf2/elf2uf2 -v $path "$uf2file"
+
+    # Generate a disassembly file.
+    echo "*** Generating disassembly file ***"
+    arm-none-eabi-objdump -S $path > "$disfile"
+done
