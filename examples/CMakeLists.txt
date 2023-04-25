@@ -1,2 +1,2 @@
 # Contains all subfolders for the examples.
-add_subdirectory(basic_example)
+add_subdirectory(blink_registers_timer)

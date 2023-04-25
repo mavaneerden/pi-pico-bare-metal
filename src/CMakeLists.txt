@@ -1,6 +1,6 @@
 ##### SPECIFY LIBRARY SOURCES AND HEADERS #####
-set(LIB_SOURCES rp2040_startup.cpp rp2040_vector_table.cpp) # Specify library source files.
-set(LIB_HEADERS rp2040_vector_table.hpp registers/ssi.hpp registers/xip.hpp registers/qspi.hpp) # Specify library header files.
+set(LIB_SOURCES rp2040_startup.cpp rp2040_vector_table.cpp registers/definitions.cpp) # Specify library source files.
+set(LIB_HEADERS rp2040_vector_table.hpp registers/ssi.hpp registers/xip.hpp registers/pads.hpp) # Specify library header files.
 
 ##### ADD LIBRARY TARGET #####
 add_library(pi-pico-bare-metal ${LIB_SOURCES} ${LIB_HEADERS}) # Add library with specified sources and headers.

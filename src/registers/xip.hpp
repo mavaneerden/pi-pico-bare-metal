@@ -8,37 +8,36 @@
 
 #include <stdint.h>
 
-// TODO: unions!
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 typedef struct
 {
     /* Cache control. */
-    struct
+    union
     {
-        /* When 1, enable the cache. When the cache is disabled, all XIP accesses will go straight to the flash,
-         * without querying the cache. When enabled, cacheable XIP accesses will query the cache,
-         * and the flash will not be accessed if the tag matches and the valid bit is set.
-         * If the cache is enabled, cache-as-SRAM accesses have no effect on the cache data RAM, and will produce a bus error response.
-         * RESET: 0x1
-         */
-        uint8_t EN : 1;
-        /* When 1, writes to any alias other than 0x0 (caching, allocating) will produce a bus fault.
-         * When 0, these writes are silently ignored.
-         * In either case, writes to the 0x0 alias will deallocate on tag match, as usual.
-         * RESET: 0x1
-         */
-        uint8_t ERR_BADWRITE : 1;
-        uint8_t : 1; /* RESERVED */
-        /* When 1, the cache memories are powered down. They retain state, but can not be accessed.
-         * This reduces static power dissipation. Writing 1 to this bit forces CTRL_EN to 0, i.e. the cache cannot be enabled when powered down.
-         * Cache-as-SRAM accesses will produce a bus error response when the cache is powered down.
-         * RESET: 0x0
-         */
-        uint8_t POWER_DOWN : 1;
-        uint32_t : 28; /* RESERVED */
+        struct
+        {
+            /* When 1, enable the cache. When the cache is disabled, all XIP accesses will go straight to the flash,
+             * without querying the cache. When enabled, cacheable XIP accesses will query the cache,
+             * and the flash will not be accessed if the tag matches and the valid bit is set.
+             * If the cache is enabled, cache-as-SRAM accesses have no effect on the cache data RAM, and will produce a bus error response.
+             * RESET: 0x1
+             */
+            uint32_t EN : 1;
+            /* When 1, writes to any alias other than 0x0 (caching, allocating) will produce a bus fault.
+             * When 0, these writes are silently ignored.
+             * In either case, writes to the 0x0 alias will deallocate on tag match, as usual.
+             * RESET: 0x1
+             */
+            uint32_t ERR_BADWRITE : 1;
+            uint32_t : 1; /* RESERVED */
+            /* When 1, the cache memories are powered down. They retain state, but can not be accessed.
+             * This reduces static power dissipation. Writing 1 to this bit forces CTRL_EN to 0, i.e. the cache cannot be enabled when powered down.
+             * Cache-as-SRAM accesses will produce a bus error response when the cache is powered down.
+             * RESET: 0x0
+             */
+            uint32_t POWER_DOWN : 1;
+            uint32_t : 28; /* RESERVED */
+        };
+        uint32_t all;
     } CTRL;
 
     /* Cache Flush control.
@@ -48,27 +47,31 @@ typedef struct
      * Alternatively STAT can be polled until completion.
      * RESET: 0x0
      */
-    uint8_t FLUSH : 1;
+    uint32_t FLUSH : 1;
     uint32_t : 31; /* RESERVED */
 
     /* Cache Status. */
-    struct
+    union
     {
-        /* Reads as 0 while a cache flush is in progress, and 1 otherwise.
-         * The cache is flushed whenever the XIP block is reset, and also when requested via the FLUSH register.
-         * RESET: 0x0
-         */
-        uint8_t FLUSH_READY : 1;
-        /* When 1, indicates the XIP streaming FIFO is completely empty.
-         * RESET: 0x1
-         */
-        uint8_t FIFO_EMPTY : 1;
-        /* When 1, indicates the XIP streaming FIFO is completely full.
-         * The streaming FIFO is 2 entries deep, so the full and empty flag allow its level to be ascertained.
-         * RESET: 0x0
-         */
-        uint8_t FIFO_FULL : 1;
-        uint32_t : 29; /* RESERVED */
+        struct
+        {
+            /* Reads as 0 while a cache flush is in progress, and 1 otherwise.
+             * The cache is flushed whenever the XIP block is reset, and also when requested via the FLUSH register.
+             * RESET: 0x0
+             */
+            uint32_t FLUSH_READY : 1;
+            /* When 1, indicates the XIP streaming FIFO is completely empty.
+             * RESET: 0x1
+             */
+            uint32_t FIFO_EMPTY : 1;
+            /* When 1, indicates the XIP streaming FIFO is completely full.
+             * The streaming FIFO is 2 entries deep, so the full and empty flag allow its level to be ascertained.
+             * RESET: 0x0
+             */
+            uint32_t FIFO_FULL : 1;
+            uint32_t : 29; /* RESERVED */
+        };
+        uint32_t all;
     } STAT;
 
     /* Cache Hit counter.
@@ -85,7 +88,7 @@ typedef struct
      */
     uint32_t CTR_ACC;
 
-    uint8_t : 2; /* RESERVED */
+    uint32_t : 2; /* RESERVED */
     /* FIFO stream address.
      * The address of the next word to be streamed from flash to the streaming FIFO.
      * Increments automatically after each flash access.
@@ -110,11 +113,14 @@ typedef struct
      * RESET: 0x00000000
      */
     uint32_t STREAM_FIFO;
-} XIP_CTRL_Type;
+} XIP_registers_t;
 
-/* Execute-in-place (XIP) control registers. */
-volatile XIP_CTRL_Type XIP __attribute__((section(".registers.xip")));
+/* Execute-in-place (XIP) control registers. Normal read-write access. */
+extern volatile XIP_registers_t XIP;
+/* Execute-in-place (XIP) control registers. Atomic XOR on write. */
+extern volatile XIP_registers_t XIP_XOR;
+/* Execute-in-place (XIP) control registers. Atomic bitmask set on write. */
+extern volatile XIP_registers_t XIP_SET;
+/* Execute-in-place (XIP) control registers. Atomic bitmask clear on write. */
+extern volatile XIP_registers_t XIP_CLEAR;
 
-#ifdef __cplusplus
-} /* extern "C" */
-#endif

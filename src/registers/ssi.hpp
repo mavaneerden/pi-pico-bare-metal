@@ -11,12 +11,8 @@
 // TODO: documentation!
 // TODO: unions!
 
-/* Apparently this is necessary to make it work. Without this, the program crashes when accessing the struct. */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-enum SSI_CTRLR0_TMOD : uint32_t {
+enum SSI_CTRLR0_TMOD_value : uint32_t
+{
     SSI_CTRLR0_TMOD_BOTH_TX_AND_RX = 0x0u,
     SSI_CTRLR0_TMOD_TX_ONLY        = 0x1u,
     SSI_CTRLR0_TMOD_RX_ONLY        = 0x2u,
@@ -36,7 +32,7 @@ typedef struct
                 uint32_t FRF : 2;
                 uint32_t SCPH : 1;
                 uint32_t SCPOL : 1;
-                enum SSI_CTRLR0_TMOD TMOD : 2;
+                enum SSI_CTRLR0_TMOD_value TMOD : 2;
                 uint32_t SLV_OE : 1;
                 uint32_t SRL : 1;
                 uint32_t CFS : 4;
@@ -231,10 +227,9 @@ typedef struct
         uint32_t TDE : 8;
         uint32_t : 24;
     } TXD_DRIVE_EDGE;
-} SSI_Type;
+} SSI_registers_t;
 
-volatile SSI_Type SSI __attribute__((section(".registers.ssi")));
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
+extern volatile SSI_registers_t SSI;
+extern volatile SSI_registers_t SSI_XOR;
+extern volatile SSI_registers_t SSI_SET;
+extern volatile SSI_registers_t SSI_CLEAR;

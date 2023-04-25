@@ -67,9 +67,9 @@ typedef std::vector<address_range> address_ranges;
 #define FLASH_START           0x10000000u // same as XIP_MAIN_BASE in addressmap.h
 #define FLASH_END             0x10200000u
 #define XIP_CTRL_START        0x14000000u
-#define XIP_CTRL_END          0x14000020u
+#define XIP_CTRL_END          0x14003020u
 #define XIP_SSI_START         0x18000000u
-#define XIP_SSI_END           0x180000FCu
+#define XIP_SSI_END           0x180030FCu
 #define XIP_SRAM_START        0x15000000u // same as XIP_SRAM_BASE in addressmap.h
 #define XIP_SRAM_END          0x15004000u // same as XIP_SRAM_END in addressmap.h
 #define MAIN_RAM_BANKED_START 0x21000000u // same as SRAM0_BASE in addressmap.h
@@ -84,6 +84,8 @@ typedef std::vector<address_range> address_ranges;
 #define USBCTRL_END           0x5010009cu
 #define PIO_START             0x50200000u
 #define PIO_END               0x50300144u
+#define SIO_BASE_START        0xd0000000u
+#define SIO_BASE_END          0xd0000180u
 #define PPB_BASE_START        0xe0000000u
 #define PPB_BASE_END          0xe000eda4u
 
@@ -97,6 +99,7 @@ const address_ranges rp2040_address_ranges_flash {
     address_range(DMA_START, DMA_END, address_range::type::CONTENTS),
     address_range(USBCTRL_START, USBCTRL_END, address_range::type::CONTENTS),
     address_range(PIO_START, PIO_END, address_range::type::CONTENTS),
+    address_range(SIO_BASE_START, SIO_BASE_END, address_range::type::CONTENTS),
     address_range(PPB_BASE_START, PPB_BASE_END, address_range::type::CONTENTS),
 };
 

@@ -13,16 +13,17 @@
 
 /* Attribute used for default interrupt handlers.
  * - weak: tells linker that definition can be overwritten.
+ * - noreturn: tells compiler that function does not return.
  * - alias: used default_handler as default definition.
  * - interrupt: tells the compiler that this function is an interrupt.
  */
-#define DEFAULT_HANDLER_ATTRIBUTE __attribute__((weak, used, noreturn, alias("default_handler"), interrupt("IRQ")))
+#define DEFAULT_HANDLER_ATTRIBUTE __attribute__((weak, noreturn, alias("default_handler"), interrupt("IRQ")))
 
 /* Pointer to the top of the stack. */
 extern uint32_t __stack_0_top__;
 
 #ifdef __cplusplus
-extern "C" { /* Required to avoid name mangling. */
+extern "C" { /* Required to avoid name mangling for weak functions. */
 #endif
 
 /******** CORTEX M0+ INTERRUPT HANDLERS ********/
@@ -108,14 +109,18 @@ void I2C1_IRQ_handler(void) DEFAULT_HANDLER_ATTRIBUTE;
 void RTC_IRQ_handler(void) DEFAULT_HANDLER_ATTRIBUTE;
 
 
+#ifdef __cplusplus
+}
+#endif
+
 /******** INTERRUPT VECTOR TABLE ********/
 /* See https://developer.arm.com/documentation/dui0662/b/The-Cortex-M0--Processor/Exception-model/Vector-table.
- * For some reason, using 'void* const' removes the section. Adding 'extern "C"' makes it work again, but it is already inside an extern "C"?
- * Adding this extra 'const' at the end would make it a READONLY section.
+ * Contains the main stack pointer and all interrupt handlers.
+ *
  * We add it to its own section so we can link it later. This is not strictly necessary because the
  * VTOR register contains the address of the interrupt vector table: it does not need to be in a specific place.
  */
-volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribute__((section(".vector_table"))) = {
+void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribute__((section(".vector_table"))) = {
     (void*) &__stack_0_top__,
     (void*) &Reset_handler,
     (void*) &NMI_handler,
@@ -159,7 +164,3 @@ volatile void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribute__((s
     (void*) &I2C1_IRQ_handler,
     (void*) &RTC_IRQ_handler
 };
-
-#ifdef __cplusplus
-}
-#endif

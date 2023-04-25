@@ -28,6 +28,7 @@ for path in `find . -name "*.elf" -type f`; do
     croppedpath=${path%.elf}
     uf2file="$croppedpath.uf2"
     disfile="$croppedpath.dis"
+    binfile="$croppedpath.bin"
 
     # Separator.
     echo -e "\n****** Processing file $path ******"
@@ -38,9 +39,13 @@ for path in `find . -name "*.elf" -type f`; do
 
     # Generate a UF2 file.
     echo "*** Generating UF2 file ***"
-    ../scripts/elf2uf2/elf2uf2 -v $path "$uf2file"
+    ../scripts/elf2uf2/elf2uf2 -v $path $uf2file
 
     # Generate a disassembly file.
     echo "*** Generating disassembly file ***"
-    arm-none-eabi-objdump -S $path > "$disfile"
+    arm-none-eabi-objdump -S $path > $disfile
+
+    # Generate binary file.
+    echo "*** Generating binary file ***"
+    arm-none-eabi-objcopy -O binary $path $binfile
 done
