@@ -21,7 +21,7 @@ extern uint32_t __bss_end__;
 extern int main(void);
 
 #ifdef __cplusplus
-extern "C" { /* Required to avoid name mangling. */
+extern "C" { /* Required to avoid name mangling for Reset handler and entry point in linker. */
 #endif
 
 /**
@@ -29,11 +29,14 @@ extern "C" { /* Required to avoid name mangling. */
  * Calls 'main' after setting up the Pico.
  */
 void Reset_handler(void) {
-    // TODO: set up clocks and stuff
+    // TODO: set up clocks and PLLs
+    // TODO: some other initialisation?
     // TODO: set up QSPI for better XIP --> put .text in flash --> only put small section in SRAM?
 
     /* Call main. */
     main();
+
+    // TODO: call some handler here if main returns
 }
 
 /**
@@ -46,6 +49,7 @@ void Reset_handler(void) {
  *
  * We cannot use individual bitfield addressing for the CTRLR0 and SPI_CTRLR0 registers because that takes up too much memory with -O0.
  */
+// TODO: section is too large when using -O3.
 __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_startup_flash_second_stage(void)
 {
     /* Disable SSI to allow configuration. */
@@ -55,7 +59,7 @@ __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_s
     SSI.BAUDR.SCKDV = 2u;
 
     /* Set the CTRLR0 register. */
-    // TODO: use enums and flash chip driver here!
+    // TODO: use enums here!
     SSI.CTRLR0.all =
         (0x0u                        << 21u) | /* SSI.CTRLR0.SPI_FRF = 0x0u;                        Use 1 bit per clock, see section 9.2.6 in the W25Q16JVUXIQ datasheet. */
         (SSI_CTRLR0_TMOD_EEPROM_READ << 8u)  | /* SSI.CTRLR0.TMOD = SSI_CTRLR0_TMOD_EEPROM_READ;    First transmit instructions, then receive. Required for proper flash operation because we need to send the read command. */
@@ -104,7 +108,7 @@ __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_s
     asm("msr msp, %[stack_top_ptr]" :: [stack_top_ptr] "r" (interrupt_vector_table[0]));
 
     /* Call the reset handler (2nd element in VTOR table). */
-    asm("bx %[reset_handler]" :: [reset_handler] "r" (interrupt_vector_table[1]));
+    ((void (*)(void)) interrupt_vector_table[1])();
 
     /* Signal to the compiler that this code is unreachable: https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html */
     __builtin_unreachable();
