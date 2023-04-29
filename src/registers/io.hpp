@@ -90,96 +90,98 @@ enum IOBANK0_GPIOx_CTRL_OVERRIDE : uint8_t
     IOBANK0_GPIOx_CTRL_OVERRIDE_DRIVE_HIGH_OR_ENABLE = 0x3u
 };
 
+struct IO_BANK0_GPIO_struct
+{
+    union
+    {
+        struct
+        {
+            uint32_t : 8;
+            /* Output signal from selected peripheral, before register override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t OUTFROMPERI : 1;
+            /* Output signal to pad after register override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t OUTTOPAD : 1;
+            uint32_t : 2;
+            /* Output enable from selected peripheral, before register override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t OEFROMPERI : 1;
+            /* Output enable to pad after register override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t OETOPAD : 1;
+            uint32_t : 2;
+            /* Input signal from pad before override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t INFROMPAD : 1;
+            uint32_t : 1;
+            /* Input signal to peripheral after override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t INTOPERI : 1;
+            uint32_t : 4;
+            /* Interrupt from pad before override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t IRQFROMPAD : 1;
+            uint32_t : 1;
+            /* Interrupt to processors after override is applied.
+                * Type: RO - Reset: 0x0
+                */
+            uint32_t IRQTOPROC : 1;
+            uint32_t : 5;
+        };
+
+        /* Contents of the entire 32-bit register. */
+        uint32_t all;
+    } STATUS;
+
+    /* GPIO control including function select and overrides. */
+    union
+    {
+        struct
+        {
+            /* Function select. 31 == NULL. See GPIO function table (section 2.19.2 in the RP2040 datasheet) for available functions.
+                * Can use one of the IOBANK0_GPIOx_CTRL_FUNCSEL_xxxx variables to set the pin function.
+                * Type: RW - Reset: 0x1f
+                */
+            uint32_t FUNCSEL : 4;
+            uint32_t : 3;
+            /* Output override.
+                * Type: RW - Reset: 0x0
+                */
+            enum IOBANK0_GPIOx_CTRL_OVERRIDE OUTOVER : 2;
+            uint32_t : 2;
+            /* Output enable override.
+                * Type: RW - Reset: 0x0
+                */
+            enum IOBANK0_GPIOx_CTRL_OVERRIDE OEOVER : 2;
+            uint32_t : 2;
+            /* Input override.
+                * Type: RW - Reset: 0x0
+                */
+            enum IOBANK0_GPIOx_CTRL_OVERRIDE INOVER : 2;
+            uint32_t : 10;
+            /* Interrupt override.
+                * Type: RW - Reset: 0x0
+                */
+            enum IOBANK0_GPIOx_CTRL_OVERRIDE IRQOVER : 2;
+            uint32_t : 2;
+        } CTRL;
+
+        /* Contents of the entire 32-bit register. */
+        uint32_t all;
+    };
+};
+
 typedef struct
 {
-    struct
-    {
-        union
-        {
-            struct
-            {
-                uint32_t : 8;
-                /* Output signal from selected peripheral, before register override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t OUTFROMPERI : 1;
-                /* Output signal to pad after register override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t OUTTOPAD : 1;
-                uint32_t : 2;
-                /* Output enable from selected peripheral, before register override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t OEFROMPERI : 1;
-                /* Output enable to pad after register override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t OETOPAD : 1;
-                uint32_t : 2;
-                /* Input signal from pad before override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t INFROMPAD : 1;
-                uint32_t : 1;
-                /* Input signal from peripheral after override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t INTOPERI : 1;
-                uint32_t : 4;
-                /* Interrupt from pad before override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t IRQFROMPAD : 1;
-                uint32_t : 1;
-                /* Interrupt to processors after override is applied.
-                 * Type: RO - Reset: 0x0
-                 */
-                uint32_t IRQTOPROC : 1;
-                uint32_t : 5;
-            };
-
-            /* Contents of the entire 32-bit register. */
-            uint32_t all;
-        } STATUS;
-
-        /* GPIO control including function select and overrides. */
-        union
-        {
-            struct
-            {
-                /* Function select. 31 == NULL. See GPIO function table (section 2.19.2 in the RP2040 datasheet) for available functions.
-                 * Can use one of the IOBANK0_GPIOx_CTRL_FUNCSEL_xxxx variables to set the pin function.
-                 * Type: RW - Reset: 0x1f
-                 */
-                uint32_t FUNCSEL : 4;
-                uint32_t : 3;
-                /* Output override.
-                 * Type: RW - Reset: 0x0
-                 */
-                enum IOBANK0_GPIOx_CTRL_OVERRIDE OUTOVER : 2;
-                uint32_t : 2;
-                /* Output enable override.
-                 * Type: RW - Reset: 0x0
-                 */
-                enum IOBANK0_GPIOx_CTRL_OVERRIDE OEOVER : 2;
-                uint32_t : 2;
-                /* Input override.
-                 * Type: RW - Reset: 0x0
-                 */
-                enum IOBANK0_GPIOx_CTRL_OVERRIDE INOVER : 2;
-                uint32_t : 10;
-                /* Interrupt override.
-                 * Type: RW - Reset: 0x0
-                 */
-                enum IOBANK0_GPIOx_CTRL_OVERRIDE IRQOVER : 2;
-                uint32_t : 2;
-            } CTRL;
-
-            /* Contents of the entire 32-bit register. */
-            uint32_t all;
-        };
-    } GPIO[RP2040_NUMBER_OF_GPIO_PINS];
+    struct IO_BANK0_GPIO_struct GPIO[30];
 
     // TODO: include all other registers.
 } IO_BANK0_registers_t;
