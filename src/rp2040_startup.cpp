@@ -7,6 +7,8 @@
 #include "rp2040_vector_table.hpp"
 #include "registers/ssi.hpp"
 
+// TODO: use C++ casts!
+
 /* External symbols provided by linker. */
 extern uint32_t __flash_text_start__;
 extern uint32_t __flash_data_start__;
@@ -16,6 +18,10 @@ extern uint32_t __data_start__;
 extern uint32_t __data_end__;
 extern uint32_t __bss_start__;
 extern uint32_t __bss_end__;
+
+/* Import constructor array start and end as functions, since they need to be called as functions later. */
+extern void (*__init_array_start__)(void); /* Start of the init_array section. */
+extern void (*__init_array_end__)(void); /* End of the init_array section. */
 
 /* Main function called in the Reset handler. */
 extern int main(void);
@@ -32,6 +38,13 @@ void Reset_handler(void) {
     // TODO: set up clocks and PLLs
     // TODO: some other initialisation?
     // TODO: set up QSPI for better XIP --> put .text in flash --> only put small section in SRAM?
+
+    /* Loop over addresses of constructors and call each one. Copied from the Pico SDK.
+     * Constructors are called as late as possible to provide the widest constructor functionality.
+     */
+    for (void (**p)(void) = &__init_array_start__; p < &__init_array_end__; ++p) {
+        (*p)();
+    }
 
     /* Call main. */
     main();

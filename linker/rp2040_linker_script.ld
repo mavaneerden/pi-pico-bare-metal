@@ -39,8 +39,6 @@ SECTIONS
         KEEP(*(.flash_second_stage.entry_point))
         . = 252; /* CRC starts after 252 bytes. See section 2.8.1.3.1 of the RP2040 datasheet. */
         LONG(0x43495045) /* CRC placeholder, will be overwritten by the bin2uf2 script. */
-        /* LONG(3CA4C464) */
-        /* LONG(0x64C4A43C) */
         . = ALIGN(4); /* Word alignment after section (not necessary as this section is always 256 bytes and starts at an already aligned address). */
     }> Flash_second_stage AT> Flash_second_stage
 
@@ -97,12 +95,20 @@ SECTIONS
         __data_start__ = .;
         *(.data .data.*)
         . = ALIGN(4); /* Word alignment after section. */
+
+        /* Array of pointers to constructors. */
+        __init_array_start__ = .;
+        KEEP(*(SORT(.init_array.*)))
+        KEEP(*(.init_array))
+        __init_array_end__ = .;
+        . = ALIGN(4); /* Word alignment after section. */
+
         __data_end__ = .;
     }> SRAM AT> Flash
 
 
     /* Section for unitialized data. Initialized to 0 in the second stage boot loader. */
-    .bss :
+    .bss (NOLOAD) :
     {
         __bss_start__ = .;
         *(.bss .bss.*)

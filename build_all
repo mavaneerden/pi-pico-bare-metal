@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cmakepath=/usr/bin/cmake
+
 if [[ $1 != "Debug" && $1 != "Release" ]]; then
     echo "First argument must be 'Debug' or 'Release'."
     exit
@@ -10,13 +12,13 @@ cd ./build
 echo "*** Building executables using CMake..."
 
 # Clean build directory.
-cmake --build . --target clean
+"$cmakepath" --build . --target clean
 
 # Invoke CMake.
-cmake -DCMAKE_BUILD_TYPE=$1 ..
+"$cmakepath" -DCMAKE_BUILD_TYPE=$1 ..
 
 # Make all examples.
-cmake --build .
+"$cmakepath" --build .
 
 # Compile elf2uf2 script.
 cd ../scripts/elf2uf2/
