@@ -21,6 +21,10 @@ MEMORY
     PADS_BANK0(RW): ORIGIN = 0x4001C000, LENGTH = 0x3084 /* PADS_BANK0 peripheral, see section 2.19.6.3 in the RP2040 datasheet. */
     PADS_QSPI(RW): ORIGIN = 0x40020000, LENGTH = 0x301C /* PADS_QSPI peripheral, see section 2.19.6.4 in the RP2040 datasheet. */
     XOSC(RW): ORIGIN = 0x40024000, LENGTH = 0x3020 /* XOSC peripheral, see section 2.16.7 in the RP2040 datasheet. */
+    PLL_SYS(RW): ORIGIN = 0x40028000, LENGTH = 0x3010 /* XOSC peripheral, see section 2.16.7 in the RP2040 datasheet. */
+    PLL_USB(RW): ORIGIN = 0x4002c000, LENGTH = 0x3010 /* XOSC peripheral, see section 2.16.7 in the RP2040 datasheet. */
+    UART0(RW): ORIGIN = 0x40034000, LENGTH = 0x4C /* UART0 peripheral, see section 4.2.8 in the RP2040 datasheet. */
+    UART1(RW): ORIGIN = 0x40038000, LENGTH = 0x4C /* UART1 peripheral, see section 4.2.8 in the RP2040 datasheet. */
     TIMER(RW): ORIGIN = 0x40054000, LENGTH = 0x3044 /* TIMER peripheral, see section 4.6.5 in the RP2040 datasheet. */
     WATCHDOG(RW): ORIGIN = 0x40058000, LENGTH = 0x3030 /* WATCHDOG peripheral, see section 4.7.6 in the RP2040 datasheet. */
     RTC(RW): ORIGIN = 0x4005C000, LENGTH = 0x3030 /* RTC peripheral, see section 4.8.6 in the RP2040 datasheet. */
@@ -217,6 +221,44 @@ SECTIONS
         *(.registers.xosc.clear)
         . = ALIGN(4);
     }> XOSC
+
+    .registers.pll_sys (NOLOAD) :
+    {
+        __registers_start__ = .;
+        *(.registers.pll_sys)
+        . = __registers_start__ + REGISTER_ATOMIC_XOR_OFFSET;
+        *(.registers.pll_sys.xor)
+        . = __registers_start__ + REGISTER_ATOMIC_SET_OFFSET;
+        *(.registers.pll_sys.set)
+        . = __registers_start__ + REGISTER_ATOMIC_CLEAR_OFFSET;
+        *(.registers.pll_sys.clear)
+        . = ALIGN(4);
+    }> PLL_SYS
+
+    .registers.pll_usb (NOLOAD) :
+    {
+        __registers_start__ = .;
+        *(.registers.pll_usb)
+        . = __registers_start__ + REGISTER_ATOMIC_XOR_OFFSET;
+        *(.registers.pll_usb.xor)
+        . = __registers_start__ + REGISTER_ATOMIC_SET_OFFSET;
+        *(.registers.pll_usb.set)
+        . = __registers_start__ + REGISTER_ATOMIC_CLEAR_OFFSET;
+        *(.registers.pll_usb.clear)
+        . = ALIGN(4);
+    }> PLL_USB
+
+    .registers.uart0 (NOLOAD) :
+    {
+        *(.registers.uart0)
+        . = ALIGN(4);
+    }> UART0
+
+    .registers.uart1 (NOLOAD) :
+    {
+        *(.registers.uart1)
+        . = ALIGN(4);
+    }> UART1
 
     .registers.timer (NOLOAD) :
     {

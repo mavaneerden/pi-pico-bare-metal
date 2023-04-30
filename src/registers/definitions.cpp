@@ -32,6 +32,16 @@ volatile PADS_QSPI_registers_t  PADS_QSPI_XOR       __attribute__((section(".reg
 volatile PADS_QSPI_registers_t  PADS_QSPI_SET       __attribute__((section(".registers.pads_qspi.set")));
 volatile PADS_QSPI_registers_t  PADS_QSPI_CLEAR     __attribute__((section(".registers.pads_qspi.clear")));
 
+volatile PLL_registers_t        PLL_SYS             __attribute__((section(".registers.pll_sys")));
+volatile PLL_registers_t        PLL_SYS_XOR         __attribute__((section(".registers.pll_sys.xor")));
+volatile PLL_registers_t        PLL_SYS_SET         __attribute__((section(".registers.pll_sys.set")));
+volatile PLL_registers_t        PLL_SYS_CLEAR       __attribute__((section(".registers.pll_sys.clear")));
+
+volatile PLL_registers_t        PLL_USB             __attribute__((section(".registers.pll_usb")));
+volatile PLL_registers_t        PLL_USB_XOR         __attribute__((section(".registers.pll_usb.xor")));
+volatile PLL_registers_t        PLL_USB_SET         __attribute__((section(".registers.pll_usb.set")));
+volatile PLL_registers_t        PLL_USB_CLEAR       __attribute__((section(".registers.pll_usb.clear")));
+
 volatile RESETS_registers_t     RESETS              __attribute__((section(".registers.resets")));
 volatile RESETS_registers_t     RESETS_XOR          __attribute__((section(".registers.resets.xor")));
 volatile RESETS_registers_t     RESETS_SET          __attribute__((section(".registers.resets.set")));
@@ -53,6 +63,9 @@ volatile TIMER_registers_t      TIMER               __attribute__((section(".reg
 volatile TIMER_registers_t      TIMER_XOR           __attribute__((section(".registers.timer.xor")));
 volatile TIMER_registers_t      TIMER_SET           __attribute__((section(".registers.timer.set")));
 volatile TIMER_registers_t      TIMER_CLEAR         __attribute__((section(".registers.timer.clear")));
+
+volatile UART_registers_t       UART0               __attribute__((section(".registers.uart0")));
+volatile UART_registers_t       UART1               __attribute__((section(".registers.uart1")));
 
 volatile WATCHDOG_registers_t   WATCHDOG            __attribute__((section(".registers.watchdog")));
 volatile WATCHDOG_registers_t   WATCHDOG_XOR        __attribute__((section(".registers.watchdog.xor")));
