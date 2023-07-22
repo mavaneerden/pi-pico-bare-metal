@@ -6,6 +6,8 @@ set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include) # Specify library source direct
 set(EXAMPLES_DIR ${CMAKE_SOURCE_DIR}/examples) # Specify examples directory.
 set(CMAKE_DIR ${CMAKE_SOURCE_DIR}/cmake) # Specify cmake directory.
 set(LINKER_DIR ${CMAKE_SOURCE_DIR}/linker) # Specify linker directory.
+set(LIBS_DIR ${CMAKE_SOURCE_DIR}/libs) # Specify libs directory.
+
 
 set(LINKER_SCRIPT ${LINKER_DIR}/rp2040_linker_script.ld)
 
@@ -15,6 +17,9 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_DIR}/toolchain.cmake) # Set toolchain file to d
 ##### CREATE PROJECT #####
 project(pi-pico-bare-metal-example VERSION 0.1) # Declare project.
 enable_language(CXX) # Set project language to C++.
+
+#### ADD LIBS ####
+# add_subdirectory(${LIBS_DIR})
 
 ##### ADD LIBRARY SUB DIRECTORY #####
 add_subdirectory(${LIB_SRC_DIR})

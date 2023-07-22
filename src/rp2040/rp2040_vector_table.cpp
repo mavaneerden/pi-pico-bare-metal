@@ -8,7 +8,6 @@
  *   This is nice because the user can overwrite the default implementations easily.
  */
 
-// #include <stdint.h>
 #include "rp2040_vector_table.hpp"
 
 /* Attribute used for default interrupt handlers.

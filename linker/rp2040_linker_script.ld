@@ -1,5 +1,5 @@
 /* Include memory sections for registers. Include directory specified by -L flag. */
-INCLUDE rp2040_register_sections.ld
+/* INCLUDE rp2040_register_sections.ld */
 
 /* Size of the heap. */
 HEAP_SIZE = 4K;

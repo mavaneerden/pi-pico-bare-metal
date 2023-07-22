@@ -9,7 +9,10 @@
  *   Code inspired by https://github.com/mickey-happygolucky/PiPico-Baremetal/tree/main/blink_ram_timer
  */
 
-#include "registers.hpp"
+#include "pico.hpp"
+#include "rp2040_registers.hpp"
+
+using namespace rp2040::registers;
 
 /* LED is on GPIO25. */
 constexpr uint32_t LED_PIN = 25u;
@@ -23,19 +26,19 @@ constexpr uint32_t ITERATION_DURATION_MICROSECONDS = 500 * 1000; /* 0.5s */
 void gpio_setup(void)
 {
     /* Reset the IO_BANK0 peripheral by clearing. Necessary, otherwise it does not work. */
-    RESETS_CLEAR.RESET.IO_BANK0 = 1u;
+    RESETS_CLEAR->RESET_b.io_bank0 = 1u;
 
     /* Wait until the IO_BANK0 peripheral has reset. */
-    while (!RESETS.RESET_DONE.IO_BANK0);
+    while (!RESETS->RESET_DONE_b.io_bank0);
 
     /* Set output override to default (no override). Using IO_BANK0_SET here does not work. */
-    IO_BANK0.GPIO[LED_PIN].CTRL.OUTOVER = IOBANK0_GPIOx_CTRL_OVERRIDE_USE_DEFAULT;
+    IO_BANK0->GPIO[LED_PIN].CTRL_b.OUTOVER = IO_BANK0_GPIO25_CTRL_OUTOVER_NORMAL;
 
     /* Set function to SIO. */
-    IO_BANK0.GPIO[LED_PIN].CTRL.FUNCSEL = IOBANK0_GPIOx_CTRL_FUNCSEL_SIO;
+    IO_BANK0->GPIO[LED_PIN].CTRL_b.FUNCSEL = IO_BANK0_GPIO25_CTRL_FUNCSEL_sio_25;
 
     /* Enable output for GPIO 25. */
-    SIO.GPIO_OE_SET = 1u << LED_PIN;
+    SIO->GPIO_OE_SET = 1u << LED_PIN;
 }
 
 /**
@@ -44,16 +47,16 @@ void gpio_setup(void)
 void timer_setup(void)
 {
     /* Reset timer periphteral. */
-    RESETS_CLEAR.RESET.TIMER = 1u;
+    RESETS_CLEAR->RESET_b.timer = 1u;
 
     /* Wait until the TIMER peripheral has reset. */
-    while (!RESETS.RESET_DONE.TIMER);
+    while (!RESETS->RESET_DONE_b.timer);
 
     /* Enable peripheral interrupt for Alarm 0. */
-    TIMER_SET.INTE.ALARM_0 = 1u;
+    TIMER_SET->INTE_b.ALARM_0 = 1u;
 
     /* Enable processor IRQ for Alarm 0. */
-    NVIC.ISER |= 1u << IRQ_NUMBER_TIMER_IRQ_0;
+    PPB->NVIC_ISER |= 1u << TIMER_IRQ_0_IRQn;
 }
 
 /**
@@ -63,16 +66,16 @@ void timer_setup(void)
 void clock_setup(void)
 {
     /* Set crystal oscillator startup delay. */
-    XOSC_SET.STARTUP.DELAY = XOSC_STARTUP_DELAY;
+    XOSC_SET->STARTUP_b.DELAY = pico::XOSC_STARTUP_DELAY;
 
     /* Enable crystal oscillator (disabled on reset). */
-    XOSC_SET.CTRL.ENABLE = XOSC_CTRL_ENABLE;
+    XOSC_SET->CTRL_b.ENABLE = XOSC_CTRL_ENABLE_ENABLE;
 
     /* Wait until crystal oscillator is stable (XOSC_STARTUP_DELAY * 256 cycles). */
-    while (!XOSC.STATUS.STABLE);
+    while (!XOSC->STATUS_b.STABLE);
 
     /* Set refrence clock source (used by timer) to crystal oscillator. */
-    CLOCKS_SET.CLK_REF.CTRL.SRC = 0x2u;
+    CLOCKS_SET->CLK_REF_CTRL_b.SRC = CLOCKS_CLK_REF_CTRL_SRC_xosc_clksrc;
 }
 
 int main(void)
@@ -92,13 +95,13 @@ int main(void)
         /* Get current time from timer (unsafe). ALARM only works with the lower timer part.
          * This lower part overflows so overflow of the sum below should have the same behaviour.
          */
-        uint32_t time_of_next_iteration = TIMER.TIMELR + ITERATION_DURATION_MICROSECONDS;
+        uint32_t time_of_next_iteration = TIMER->TIMELR + ITERATION_DURATION_MICROSECONDS;
 
         /* Toggle the LED pin. */
-        SIO.GPIO_OUT_XOR = 1u << LED_PIN;
+        SIO->GPIO_OUT_XOR = 1u << LED_PIN;
 
         /* Configure Alarm 0 to fire at next iteration. */
-        TIMER.ALARM0 = time_of_next_iteration;
+        TIMER->ALARM0 = time_of_next_iteration;
 
         /* Sleep until interrupt occurs, see section A6.7.76 in the ARMv6-M architecture reference manual. */
         asm("wfi");
@@ -117,5 +120,5 @@ extern "C" void TIMER_IRQ_0_handler(void)
      * If this is not done properly, the interrupt will keep triggering as fast as possible,
      * locking up the processor.
      */
-    TIMER_CLEAR.INTR.ALARM_0 = 1u;
+    TIMER_CLEAR->INTR_b.ALARM_0 = 1u;
 }
