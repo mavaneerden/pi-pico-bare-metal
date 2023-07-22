@@ -1,3 +1,9 @@
+/**
+ * THIS FILE IS UNUSED!!!
+ *
+ * It is kept here as reference for how to make includable LD files.
+ */
+
 REGISTER_ATOMIC_XOR_OFFSET = 0x1000;
 REGISTER_ATOMIC_SET_OFFSET = 0x2000;
 REGISTER_ATOMIC_CLEAR_OFFSET = 0x3000;

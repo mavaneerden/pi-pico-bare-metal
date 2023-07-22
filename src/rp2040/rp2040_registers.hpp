@@ -7,195 +7,146 @@
  *   XOR, SET and CLEAR. Only RP2040-specific peripherals have these aliases, so Cortex-M0+ peripherals such as SIO and PPB do not have them.
  *   The definitions need to be volatile, otherwise the compiler will optimise away crucial steps, such as setting a value to 0.
  */
-#ifndef HALLELUJAH
-#define HALLELUJAH
+#pragma once
 
 #include "CMSIS/rp2040_cmsis.h"
-
-namespace rp2040::registers
-{
 
 static constexpr uintptr_t REGISTER_ATOMIC_XOR_OFFSET = 0x1000ul;
 static constexpr uintptr_t REGISTER_ATOMIC_SET_OFFSET = 0x2000ul;
 static constexpr uintptr_t REGISTER_ATOMIC_CLEAR_OFFSET = 0x3000ul;
 
-extern "C" {
+#define XIP_CTRL_XOR ((XIP_CTRL_Type*)(XIP_CTRL_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define XIP_CTRL_SET ((XIP_CTRL_Type*)(XIP_CTRL_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define XIP_CTRL_CLEAR ((XIP_CTRL_Type*)(XIP_CTRL_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile XIP_CTRL_Type* XIP;
-extern volatile XIP_CTRL_Type* XIP_XOR;
-extern volatile XIP_CTRL_Type* XIP_SET;
-extern volatile XIP_CTRL_Type* XIP_CLEAR;
+#define XIP_SSI_XOR ((XIP_SSI_Type*)(XIP_SSI_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define XIP_SSI_SET ((XIP_SSI_Type*)(XIP_SSI_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define XIP_SSI_CLEAR ((XIP_SSI_Type*)(XIP_SSI_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile XIP_SSI_Type* XIP_SSI;
-extern volatile XIP_SSI_Type* XIP_SSI_XOR;
-extern volatile XIP_SSI_Type* XIP_SSI_SET;
-extern volatile XIP_SSI_Type* XIP_SSI_CLEAR;
+#define SYSINFO_XOR ((SYSINFO_Type*)(SYSINFO_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define SYSINFO_SET ((SYSINFO_Type*)(SYSINFO_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define SYSINFO_CLEAR ((SYSINFO_Type*)(SYSINFO_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile SYSINFO_Type* SYSINFO;
-extern volatile SYSINFO_Type* SYSINFO_XOR;
-extern volatile SYSINFO_Type* SYSINFO_SET;
-extern volatile SYSINFO_Type* SYSINFO_CLEAR;
+#define SYSCFG_XOR ((SYSCFG_Type*)(SYSCFG_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define SYSCFG_SET ((SYSCFG_Type*)(SYSCFG_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define SYSCFG_CLEAR ((SYSCFG_Type*)(SYSCFG_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile SYSCFG_Type* SYSCFG;
-extern volatile SYSCFG_Type* SYSCFG_XOR;
-extern volatile SYSCFG_Type* SYSCFG_SET;
-extern volatile SYSCFG_Type* SYSCFG_CLEAR;
+#define CLOCKS_XOR ((CLOCKS_Type*)(CLOCKS_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define CLOCKS_SET ((CLOCKS_Type*)(CLOCKS_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define CLOCKS_CLEAR ((CLOCKS_Type*)(CLOCKS_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile CLOCKS_Type* CLOCKS;
-extern volatile CLOCKS_Type* CLOCKS_XOR;
-extern volatile CLOCKS_Type* CLOCKS_SET;
-extern volatile CLOCKS_Type* CLOCKS_CLEAR;
+#define RESETS_XOR ((RESETS_Type*)(RESETS_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define RESETS_SET ((RESETS_Type*)(RESETS_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define RESETS_CLEAR ((RESETS_Type*)(RESETS_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile RESETS_Type* RESETS;
-extern volatile RESETS_Type* RESETS_XOR;
-extern volatile RESETS_Type* RESETS_SET;
-extern volatile RESETS_Type* RESETS_CLEAR;
+#define PSM_XOR ((PSM_Type*)(PSM_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PSM_SET ((PSM_Type*)(PSM_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PSM_CLEAR ((PSM_Type*)(PSM_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PSM_Type* PSM;
-extern volatile PSM_Type* PSM_XOR;
-extern volatile PSM_Type* PSM_SET;
-extern volatile PSM_Type* PSM_CLEAR;
+#define IO_BANK0_XOR ((IO_BANK0_Type*)(IO_BANK0_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define IO_BANK0_SET ((IO_BANK0_Type*)(IO_BANK0_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define IO_BANK0_CLEAR ((IO_BANK0_Type*)(IO_BANK0_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile IO_BANK0_Type* IO_BANK0;
-extern volatile IO_BANK0_Type* IO_BANK0_XOR;
-extern volatile IO_BANK0_Type* IO_BANK0_SET;
-extern volatile IO_BANK0_Type* IO_BANK0_CLEAR;
+#define IO_QSPI_XOR ((IO_QSPI_Type*)(IO_QSPI_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define IO_QSPI_SET ((IO_QSPI_Type*)(IO_QSPI_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define IO_QSPI_CLEAR ((IO_QSPI_Type*)(IO_QSPI_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile IO_QSPI_Type* IO_QSPI;
-extern volatile IO_QSPI_Type* IO_QSPI_XOR;
-extern volatile IO_QSPI_Type* IO_QSPI_SET;
-extern volatile IO_QSPI_Type* IO_QSPI_CLEAR;
+#define PADS_BANK0_XOR ((PADS_BANK0_Type*)(PADS_BANK0_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PADS_BANK0_SET ((PADS_BANK0_Type*)(PADS_BANK0_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PADS_BANK0_CLEAR ((PADS_BANK0_Type*)(PADS_BANK0_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PADS_BANK0_Type* PADS_BANK0;
-extern volatile PADS_BANK0_Type* PADS_BANK0_XOR;
-extern volatile PADS_BANK0_Type* PADS_BANK0_SET;
-extern volatile PADS_BANK0_Type* PADS_BANK0_CLEAR;
+#define PADS_QSPI_XOR ((PADS_QSPI_Type*)(PADS_QSPI_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PADS_QSPI_SET ((PADS_QSPI_Type*)(PADS_QSPI_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PADS_QSPI_CLEAR ((PADS_QSPI_Type*)(PADS_QSPI_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PADS_QSPI_Type* PADS_QSPI;
-extern volatile PADS_QSPI_Type* PADS_QSPI_XOR;
-extern volatile PADS_QSPI_Type* PADS_QSPI_SET;
-extern volatile PADS_QSPI_Type* PADS_QSPI_CLEAR;
+#define XOSC_XOR ((XOSC_Type*)(XOSC_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define XOSC_SET ((XOSC_Type*)(XOSC_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define XOSC_CLEAR ((XOSC_Type*)(XOSC_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile XOSC_Type* XOSC;
-extern volatile XOSC_Type* XOSC_XOR;
-extern volatile XOSC_Type* XOSC_SET;
-extern volatile XOSC_Type* XOSC_CLEAR;
+#define PLL_SYS_XOR ((PLL_SYS_Type*)(PLL_SYS_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PLL_SYS_SET ((PLL_SYS_Type*)(PLL_SYS_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PLL_SYS_CLEAR ((PLL_SYS_Type*)(PLL_SYS_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PLL_SYS_Type* PLL_SYS;
-extern volatile PLL_SYS_Type* PLL_SYS_XOR;
-extern volatile PLL_SYS_Type* PLL_SYS_SET;
-extern volatile PLL_SYS_Type* PLL_SYS_CLEAR;
+#define PLL_USB_XOR ((PLL_SYS_Type*)(PLL_USB_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PLL_USB_SET ((PLL_SYS_Type*)(PLL_USB_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PLL_USB_CLEAR ((PLL_SYS_Type*)(PLL_USB_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PLL_SYS_Type* PLL_USB;
-extern volatile PLL_SYS_Type* PLL_USB_XOR;
-extern volatile PLL_SYS_Type* PLL_USB_SET;
-extern volatile PLL_SYS_Type* PLL_USB_CLEAR;
+#define BUSCTRL_XOR ((BUSCTRL_Type*)(BUSCTRL_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define BUSCTRL_SET ((BUSCTRL_Type*)(BUSCTRL_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define BUSCTRL_CLEAR ((BUSCTRL_Type*)(BUSCTRL_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile BUSCTRL_Type* BUSCTRL;
-extern volatile BUSCTRL_Type* BUSCTRL_XOR;
-extern volatile BUSCTRL_Type* BUSCTRL_SET;
-extern volatile BUSCTRL_Type* BUSCTRL_CLEAR;
+#define UART0_XOR ((UART0_Type*)(UART0_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define UART0_SET ((UART0_Type*)(UART0_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define UART0_CLEAR ((UART0_Type*)(UART0_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile UART0_Type* UART0;
-extern volatile UART0_Type* UART0_XOR;
-extern volatile UART0_Type* UART0_SET;
-extern volatile UART0_Type* UART0_CLEAR;
+#define UART1_XOR ((UART0_Type*)(UART1_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define UART1_SET ((UART0_Type*)(UART1_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define UART1_CLEAR ((UART0_Type*)(UART1_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile UART0_Type* UART1;
-extern volatile UART0_Type* UART1_XOR;
-extern volatile UART0_Type* UART1_SET;
-extern volatile UART0_Type* UART1_CLEAR;
+#define SPI0_XOR ((SPI0_Type*)(SPI0_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define SPI0_SET ((SPI0_Type*)(SPI0_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define SPI0_CLEAR ((SPI0_Type*)(SPI0_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile SPI0_Type* SPI0;
-extern volatile SPI0_Type* SPI0_XOR;
-extern volatile SPI0_Type* SPI0_SET;
-extern volatile SPI0_Type* SPI0_CLEAR;
+#define SPI1_XOR ((SPI0_Type*)(SPI1_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define SPI1_SET ((SPI0_Type*)(SPI1_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define SPI1_CLEAR ((SPI0_Type*)(SPI1_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile SPI0_Type* SPI1;
-extern volatile SPI0_Type* SPI1_XOR;
-extern volatile SPI0_Type* SPI1_SET;
-extern volatile SPI0_Type* SPI1_CLEAR;
+#define I2C0_XOR ((I2C0_Type*)(I2C0_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define I2C0_SET ((I2C0_Type*)(I2C0_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define I2C0_CLEAR ((I2C0_Type*)(I2C0_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile I2C0_Type* I2C0;
-extern volatile I2C0_Type* I2C0_XOR;
-extern volatile I2C0_Type* I2C0_SET;
-extern volatile I2C0_Type* I2C0_CLEAR;
+#define I2C1_XOR ((I2C0_Type*)(I2C1_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define I2C1_SET ((I2C0_Type*)(I2C1_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define I2C1_CLEAR ((I2C0_Type*)(I2C1_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile I2C0_Type* I2C1;
-extern volatile I2C0_Type* I2C1_XOR;
-extern volatile I2C0_Type* I2C1_SET;
-extern volatile I2C0_Type* I2C1_CLEAR;
+#define ADC_XOR ((ADC_Type*)(ADC_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define ADC_SET ((ADC_Type*)(ADC_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define ADC_CLEAR ((ADC_Type*)(ADC_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile ADC_Type* ADC;
-extern volatile ADC_Type* ADC_XOR;
-extern volatile ADC_Type* ADC_SET;
-extern volatile ADC_Type* ADC_CLEAR;
+#define PWM_XOR ((PWM_Type*)(PWM_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PWM_SET ((PWM_Type*)(PWM_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PWM_CLEAR ((PWM_Type*)(PWM_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PWM_Type* PWM;
-extern volatile PWM_Type* PWM_XOR;
-extern volatile PWM_Type* PWM_SET;
-extern volatile PWM_Type* PWM_CLEAR;
+#define TIMER_XOR ((TIMER_Type*)(TIMER_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define TIMER_SET ((TIMER_Type*)(TIMER_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define TIMER_CLEAR ((TIMER_Type*)(TIMER_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile TIMER_Type* TIMER;
-extern volatile TIMER_Type* TIMER_XOR;
-extern volatile TIMER_Type* TIMER_SET;
-extern volatile TIMER_Type* TIMER_CLEAR;
+#define WATCHDOG_XOR ((WATCHDOG_Type*)(WATCHDOG_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define WATCHDOG_SET ((WATCHDOG_Type*)(WATCHDOG_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define WATCHDOG_CLEAR ((WATCHDOG_Type*)(WATCHDOG_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile WATCHDOG_Type* WATCHDOG;
-extern volatile WATCHDOG_Type* WATCHDOG_XOR;
-extern volatile WATCHDOG_Type* WATCHDOG_SET;
-extern volatile WATCHDOG_Type* WATCHDOG_CLEAR;
+#define RTC_XOR ((RTC_Type*)(RTC_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define RTC_SET ((RTC_Type*)(RTC_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define RTC_CLEAR ((RTC_Type*)(RTC_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile RTC_Type* RTC;
-extern volatile RTC_Type* RTC_XOR;
-extern volatile RTC_Type* RTC_SET;
-extern volatile RTC_Type* RTC_CLEAR;
+#define ROSC_XOR ((ROSC_Type*)(ROSC_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define ROSC_SET ((ROSC_Type*)(ROSC_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define ROSC_CLEAR ((ROSC_Type*)(ROSC_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile ROSC_Type* ROSC;
-extern volatile ROSC_Type* ROSC_XOR;
-extern volatile ROSC_Type* ROSC_SET;
-extern volatile ROSC_Type* ROSC_CLEAR;
+#define VREG_AND_CHIP_RESET_XOR ((VREG_AND_CHIP_RESET_Type*)(VREG_AND_CHIP_RESET_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define VREG_AND_CHIP_RESET_SET ((VREG_AND_CHIP_RESET_Type*)(VREG_AND_CHIP_RESET_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define VREG_AND_CHIP_RESET_CLEAR ((VREG_AND_CHIP_RESET_Type*)(VREG_AND_CHIP_RESET_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile VREG_AND_CHIP_RESET_Type* VREG_AND_CHIP_RESET;
-extern volatile VREG_AND_CHIP_RESET_Type* VREG_AND_CHIP_RESET_XOR;
-extern volatile VREG_AND_CHIP_RESET_Type* VREG_AND_CHIP_RESET_SET;
-extern volatile VREG_AND_CHIP_RESET_Type* VREG_AND_CHIP_RESET_CLEAR;
+#define TBMAN_XOR ((TBMAN_Type*)(TBMAN_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define TBMAN_SET ((TBMAN_Type*)(TBMAN_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define TBMAN_CLEAR ((TBMAN_Type*)(TBMAN_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile TBMAN_Type* TBMAN;
-extern volatile TBMAN_Type* TBMAN_XOR;
-extern volatile TBMAN_Type* TBMAN_SET;
-extern volatile TBMAN_Type* TBMAN_CLEAR;
+#define DMA_XOR ((DMA_Type*)(DMA_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define DMA_SET ((DMA_Type*)(DMA_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define DMA_CLEAR ((DMA_Type*)(DMA_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile DMA_Type* DMA;
-extern volatile DMA_Type* DMA_XOR;
-extern volatile DMA_Type* DMA_SET;
-extern volatile DMA_Type* DMA_CLEAR;
+#define USBCTRL_DPRAM_XOR ((USBCTRL_DPRAM_Type*)(USBCTRL_DPRAM_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define USBCTRL_DPRAM_SET ((USBCTRL_DPRAM_Type*)(USBCTRL_DPRAM_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define USBCTRL_DPRAM_CLEAR ((USBCTRL_DPRAM_Type*)(USBCTRL_DPRAM_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile USBCTRL_DPRAM_Type* USBCTRL_DPRAM;
-extern volatile USBCTRL_DPRAM_Type* USBCTRL_DPRAM_XOR;
-extern volatile USBCTRL_DPRAM_Type* USBCTRL_DPRAM_SET;
-extern volatile USBCTRL_DPRAM_Type* USBCTRL_DPRAM_CLEAR;
+#define USBCTRL_REGS_XOR ((USBCTRL_REGS_Type*)(USBCTRL_REGS_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define USBCTRL_REGS_SET ((USBCTRL_REGS_Type*)(USBCTRL_REGS_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define USBCTRL_REGS_CLEAR ((USBCTRL_REGS_Type*)(USBCTRL_REGS_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile USBCTRL_REGS_Type* USBCTRL_REGS;
-extern volatile USBCTRL_REGS_Type* USBCTRL_REGS_XOR;
-extern volatile USBCTRL_REGS_Type* USBCTRL_REGS_SET;
-extern volatile USBCTRL_REGS_Type* USBCTRL_REGS_CLEAR;
+#define PIO0_XOR ((PIO0_Type*)(PIO0_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PIO0_SET ((PIO0_Type*)(PIO0_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PIO0_CLEAR ((PIO0_Type*)(PIO0_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))
 
-extern volatile PIO0_Type* PIO0;
-extern volatile PIO0_Type* PIO0_XOR;
-extern volatile PIO0_Type* PIO0_SET;
-extern volatile PIO0_Type* PIO0_CLEAR;
-
-extern volatile PIO0_Type* PIO1;
-extern volatile PIO0_Type* PIO1_XOR;
-extern volatile PIO0_Type* PIO1_SET;
-extern volatile PIO0_Type* PIO1_CLEAR;
-
-extern volatile SIO_Type* SIO;
-
-extern volatile PPB_Type* PPB;
-}
-
-} // namespace rp2040::registers
-
-#endif
+#define PIO1_XOR ((PIO0_Type*)(PIO1_BASE + REGISTER_ATOMIC_XOR_OFFSET))
+#define PIO1_SET ((PIO0_Type*)(PIO1_BASE + REGISTER_ATOMIC_SET_OFFSET))
+#define PIO1_CLEAR ((PIO0_Type*)(PIO1_BASE + REGISTER_ATOMIC_CLEAR_OFFSET))

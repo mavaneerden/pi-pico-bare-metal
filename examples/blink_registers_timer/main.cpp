@@ -12,7 +12,7 @@
 #include "pico.hpp"
 #include "rp2040_registers.hpp"
 
-using namespace rp2040::registers;
+// using namespace rp2040::registers;
 
 /* LED is on GPIO25. */
 constexpr uint32_t LED_PIN = 25u;

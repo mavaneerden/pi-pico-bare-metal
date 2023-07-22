@@ -42,9 +42,7 @@ constexpr uint32_t XIP_SSI_SPI_CTRLR0_settings =
     (XIP_SSI_SPI_CTRLR0_INST_L_8B << XIP_SSI_SPI_CTRLR0_INST_L_Pos)  | /* SSI.SPI_CTRLR0.INST_L = 0x2u;       The instruction length is 8 bits, so value 0x02 (see section 4.10.13 in the RP2040 datasheet). */
     (XIP_SSI_SPI_CTRLR0_TRANS_TYPE_1C1A << XIP_SSI_SPI_CTRLR0_TRANS_TYPE_Pos);   /* SSI.SPI_CTRLR0.TRANS_TYPE = 0x0u;   Use standard SPI frame format (corresponds to the value in SSI.CTRLR0.SPI_FRF). */
 
-#ifdef __cplusplus
 extern "C" { /* Required to avoid name mangling for Reset handler and entry point in linker. */
-#endif
 
 /**
  * Called by the second stage boot loader.
@@ -84,22 +82,22 @@ __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_s
     // TODO: use flash chip driver for this.
 
     /* Disable SSI to allow configuration. */
-    rp2040::registers::XIP_SSI->SSIENR = 0u;
+    XIP_SSI->SSIENR = 0u;
 
     /* Set highest baud rate (i.e. lowest clock divider). Minimum divider is 2, see section 4.10.4 in the RP2040 datasheet. */
-    rp2040::registers::XIP_SSI->BAUDR = 2u;
+    XIP_SSI->BAUDR = 2u;
 
     /* Set the CTRLR0 register. */
-    rp2040::registers::XIP_SSI->CTRLR0 = XIP_SSI_CTRLR0_settings;
+    XIP_SSI->CTRLR0 = XIP_SSI_CTRLR0_settings;
 
     /* Set the SPI_CTRLR0 register. */
-    rp2040::registers::XIP_SSI->SPI_CTRLR0 = XIP_SSI_SPI_CTRLR0_settings;
+    XIP_SSI->SPI_CTRLR0 = XIP_SSI_SPI_CTRLR0_settings;
 
     /* Any data frames sent by the flash chip can be ignored, so we have 0 data frames. */
-    rp2040::registers::XIP_SSI->CTRLR1 = 0u;
+    XIP_SSI->CTRLR1 = 0u;
 
     /* Enable SSI. */
-    rp2040::registers::XIP_SSI->SSIENR = 1u;
+    XIP_SSI->SSIENR = 1u;
 
     /* Copy the .text and .data sections from flash to SRAM. */
     // TODO: keep .text in flash and use QSPI.
@@ -120,7 +118,7 @@ __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_s
     }
 
     /* Put the interrupt vector table address into the VTOR register so the processor knows where it is. */
-    rp2040::registers::PPB->VTOR = (uint32_t) interrupt_vector_table;
+    PPB->VTOR = (uint32_t) interrupt_vector_table;
 
     /* Set the main stack pointer to the first element in the VTOR table. */
     asm("msr msp, %[stack_top_ptr]" :: [stack_top_ptr] "r" (interrupt_vector_table[0]));
@@ -132,6 +130,4 @@ __attribute__((naked, section(".flash_second_stage.entry_point"))) void rp2040_s
     __builtin_unreachable();
 }
 
-#ifdef __cplusplus
 } /* extern "C" */
-#endif
