@@ -1,0 +1,27 @@
+CompileFlags:
+  Compiler: toolchain/bin/arm-none-eabi-g++
+  # BuiltinHeaders: QueryDriver NOT SUPPORTED
+Diagnostics:
+  Suppress: [non_asm_stmt_in_naked_function, -Wunknown-attributes]
+  ClangTidy:
+    Add: [
+      clang-diagnostic-*,
+      clang-analyzer-*,
+      cppcoreguidelines-*,
+      bugprone-*,
+      modernize-*,
+      readability-*,
+      modernize-use-nodiscard
+    ]
+    FastCheckFilter: None
+Hover:
+  ShowAKA: true
+
+---
+If:
+  PathMatch: .*/pi-pico-bare-metal/.*
+CompileFlags:
+  CompilationDatabase: pi-pico-bare-metal/build
+---
+CompileFlags:
+  Add: [-I/workspaces/repository/toolchain/arm-none-eabi/include, -I/workspaces/repository/toolchain/arm-none-eabi/include/c++/14.2.1, -I/workspaces/repository/toolchain/arm-none-eabi/include/c++/14.2.1/arm-none-eabi/thumb/nofp]

@@ -8,11 +8,9 @@ if [[ $1 != "Debug" && $1 != "Release" ]]; then
 fi
 
 # Change to out-of-source build directory.
+mkdir -p build
 cd ./build
 echo "*** Building executables using CMake..."
-
-# Clean build directory.
-"$cmakepath" --build . --target clean
 
 # Invoke CMake.
 "$cmakepath" -DCMAKE_BUILD_TYPE=$1 ..

@@ -1,0 +1,37 @@
+{
+    "name": "OAlpha-Flight-Software",
+    "build": {
+        "context": "..",
+        "dockerfile": "../Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools",
+                "lyn-inc.HTML-Speed-Viewer",
+                "ms-python.python",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "Gruntfuggly.todo-tree",
+                "wayou.vscode-todo-highlight",
+                "cschlosser.doxdocgen"
+            ],
+            "settings": {
+                "C_Cpp.intelliSenseEngine": "disabled",
+                "clangd.path": "clangd-19",
+                "clangd.arguments": [
+                    "--log=verbose",
+                    "--pretty",
+                    "--background-index",
+                    "--query-driver=toolchain/bin/arm-none-eabi-g++"
+                ]
+            }
+        }
+    },
+    "runArgs": [
+        // Allows communication via USB
+        "--privileged",
+        "-v",
+        "/dev/bus/usb:/dev/bus/usb"
+    ],
+}

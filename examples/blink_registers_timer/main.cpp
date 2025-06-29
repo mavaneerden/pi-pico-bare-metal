@@ -12,8 +12,6 @@
 #include "pico.hpp"
 #include "rp2040_registers.hpp"
 
-// using namespace rp2040::registers;
-
 /* LED is on GPIO25. */
 constexpr uint32_t LED_PIN = 25u;
 
@@ -65,8 +63,11 @@ void timer_setup(void)
  */
 void clock_setup(void)
 {
+    /* Set XOSC frequency range. If not set, crystal will not stabilize on power cycle. */
+    XOSC->CTRL = XOSC_CTRL_FREQ_RANGE_1_15MHZ;
+
     /* Set crystal oscillator startup delay. */
-    XOSC_SET->STARTUP_b.DELAY = pico::XOSC_STARTUP_DELAY;
+    XOSC->STARTUP_b.DELAY = pico::xosc::STARTUP_DELAY;
 
     /* Enable crystal oscillator (disabled on reset). */
     XOSC_SET->CTRL_b.ENABLE = XOSC_CTRL_ENABLE_ENABLE;
@@ -95,7 +96,7 @@ int main(void)
         /* Get current time from timer (unsafe). ALARM only works with the lower timer part.
          * This lower part overflows so overflow of the sum below should have the same behaviour.
          */
-        uint32_t time_of_next_iteration = TIMER->TIMELR + ITERATION_DURATION_MICROSECONDS;
+        volatile uint32_t time_of_next_iteration = TIMER->TIMERAWL + ITERATION_DURATION_MICROSECONDS;
 
         /* Toggle the LED pin. */
         SIO->GPIO_OUT_XOR = 1u << LED_PIN;
@@ -104,7 +105,8 @@ int main(void)
         TIMER->ALARM0 = time_of_next_iteration;
 
         /* Sleep until interrupt occurs, see section A6.7.76 in the ARMv6-M architecture reference manual. */
-        asm("wfi");
+        // asm("wfi");
+        while (TIMER->TIMELR < TIMER->ALARM0);
     }
 
     /* Unreachable code. */
@@ -120,5 +122,5 @@ extern "C" void TIMER_IRQ_0_handler(void)
      * If this is not done properly, the interrupt will keep triggering as fast as possible,
      * locking up the processor.
      */
-    TIMER_CLEAR->INTR_b.ALARM_0 = 1u;
+    TIMER->INTR_b.ALARM_0 = 1u;
 }
