@@ -8,7 +8,7 @@
  *   This is nice because the user can overwrite the default implementations easily.
  */
 
-#include "rp2040_vector_table.hpp"
+#include "vector_table.hpp"
 
 /* Attribute used for default interrupt handlers.
  * - weak: tells linker that definition can be overwritten.
@@ -22,7 +22,8 @@
 extern uint32_t __stack_0_top__;
 
 #ifdef __cplusplus
-extern "C" { /* Required to avoid name mangling for weak functions. */
+extern "C"
+{ /* Required to avoid name mangling for weak functions. */
 #endif
 
 /******** CORTEX M0+ INTERRUPT HANDLERS ********/
@@ -32,7 +33,8 @@ extern "C" { /* Required to avoid name mangling for weak functions. */
  */
 void default_handler(void)
 {
-    while (true);
+    while (true)
+        ;
 }
 
 /**
@@ -119,47 +121,46 @@ void RTC_IRQ_handler(void) DEFAULT_HANDLER_ATTRIBUTE;
  * We add it to its own section so we can link it later. This is not strictly necessary because the
  * VTOR register contains the address of the interrupt vector table: it does not need to be in a specific place.
  */
-void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE] __attribute__((section(".vector_table"))) = {
-    (void*) &__stack_0_top__,
-    (void*) &Reset_handler,
-    (void*) &NMI_handler,
-    (void*) &HardFault_handler,
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    (void*) &SVCall_handler,
-    nullptr, /* Reserved. */
-    nullptr, /* Reserved. */
-    (void*) &PendSV_handler,
-    (void*) &SysTick_handler,
-    (void*) &TIMER_IRQ_0_handler,
-    (void*) &TIMER_IRQ_1_handler,
-    (void*) &TIMER_IRQ_2_handler,
-    (void*) &TIMER_IRQ_3_handler,
-    (void*) &PWM_IRQ_WRAP_handler,
-    (void*) &USBCTRL_IRQ_handler,
-    (void*) &XIP_IRQ_handler,
-    (void*) &PIO0_IRQ_0_handler,
-    (void*) &PIO0_IRQ_1_handler,
-    (void*) &PIO1_IRQ_0_handler,
-    (void*) &PIO1_IRQ_1_handler,
-    (void*) &DMA_IRQ_0_handler,
-    (void*) &DMA_IRQ_1_handler,
-    (void*) &IO_IRQ_BANK0_handler,
-    (void*) &IO_IRQ_QSPI_handler,
-    (void*) &SIO_IRQ_PROC0_handler,
-    (void*) &SIO_IRQ_PROC1_handler,
-    (void*) &CLOCKS_IRQ_handler,
-    (void*) &SPI0_IRQ_handler,
-    (void*) &SPI1_IRQ_handler,
-    (void*) &UART0_IRQ_handler,
-    (void*) &UART1_IRQ_handler,
-    (void*) &ADC_IRQ_FIFO_handler,
-    (void*) &I2C0_IRQ_handler,
-    (void*) &I2C1_IRQ_handler,
-    (void*) &RTC_IRQ_handler
-};
+void* interrupt_vector_table[RP2040_VECTOR_TABLE_SIZE]
+    __attribute__((section(".vector_table"))) = { (void*)&__stack_0_top__,
+                                                  (void*)&Reset_handler,
+                                                  (void*)&NMI_handler,
+                                                  (void*)&HardFault_handler,
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  (void*)&SVCall_handler,
+                                                  nullptr, /* Reserved. */
+                                                  nullptr, /* Reserved. */
+                                                  (void*)&PendSV_handler,
+                                                  (void*)&SysTick_handler,
+                                                  (void*)&TIMER_IRQ_0_handler,
+                                                  (void*)&TIMER_IRQ_1_handler,
+                                                  (void*)&TIMER_IRQ_2_handler,
+                                                  (void*)&TIMER_IRQ_3_handler,
+                                                  (void*)&PWM_IRQ_WRAP_handler,
+                                                  (void*)&USBCTRL_IRQ_handler,
+                                                  (void*)&XIP_IRQ_handler,
+                                                  (void*)&PIO0_IRQ_0_handler,
+                                                  (void*)&PIO0_IRQ_1_handler,
+                                                  (void*)&PIO1_IRQ_0_handler,
+                                                  (void*)&PIO1_IRQ_1_handler,
+                                                  (void*)&DMA_IRQ_0_handler,
+                                                  (void*)&DMA_IRQ_1_handler,
+                                                  (void*)&IO_IRQ_BANK0_handler,
+                                                  (void*)&IO_IRQ_QSPI_handler,
+                                                  (void*)&SIO_IRQ_PROC0_handler,
+                                                  (void*)&SIO_IRQ_PROC1_handler,
+                                                  (void*)&CLOCKS_IRQ_handler,
+                                                  (void*)&SPI0_IRQ_handler,
+                                                  (void*)&SPI1_IRQ_handler,
+                                                  (void*)&UART0_IRQ_handler,
+                                                  (void*)&UART1_IRQ_handler,
+                                                  (void*)&ADC_IRQ_FIFO_handler,
+                                                  (void*)&I2C0_IRQ_handler,
+                                                  (void*)&I2C1_IRQ_handler,
+                                                  (void*)&RTC_IRQ_handler };

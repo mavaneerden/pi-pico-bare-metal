@@ -35,7 +35,7 @@ template<typename AccessModifier>
 concept is_writable = std::is_same_v<AccessModifier, write_only> || std::is_same_v<AccessModifier, read_write>;
 
 template<typename... AccessModifiers>
-struct add
+struct combine
 {
     using type = std::conditional_t<
         (is_read_only<AccessModifiers> && ...),

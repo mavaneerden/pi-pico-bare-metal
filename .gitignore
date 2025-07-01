@@ -34,3 +34,5 @@
 
 # CMake
 build/
+install/
+.cache/

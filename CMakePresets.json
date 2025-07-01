@@ -1,0 +1,47 @@
+{
+    "version": 10,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Config",
+            "description": "Default configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "TOOLCHAIN_BIN_PATH": "${sourceDir}/toolchain/bin/",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain.cmake"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug Config",
+            "description": "Debug configuration",
+            "binaryDir": "${sourceDir}/build/debug",
+            "installDir": "${sourceDir}/install/debug",
+            "inherits": [
+                "default"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release Config",
+            "description": "Release configuration",
+            "binaryDir": "${sourceDir}/build/release",
+            "installDir": "${sourceDir}/install/release",
+            "inherits": [
+                "default"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "MinSizeRel"
+            }
+        }
+    ]
+}

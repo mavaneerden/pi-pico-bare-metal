@@ -6,10 +6,8 @@ ARG GROUP_ID=1000
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
-RUN apt-get update
-RUN apt-get install -y build-essential git
-# Build dependencies
-RUN apt-get install -y cmake
+RUN apt-get update && apt-get install -y build-essential git software-properties-common lsb-release
+RUN apt-get install -y unzip
 # Script dependencies
 RUN apt-get install -y python-is-python3
 # Formatting & checks
@@ -35,16 +33,29 @@ RUN touch /home/user/.sudo_as_admin_successful
 # Change the working directory
 WORKDIR /home/user
 
-# Install newer version of clang-format
+# Install newer version of ninja.
+# This was required for modules. Ninja sucks because it seems to have hidden caching things going on,
+# so it will sometimes just not build the correct version of your code.
+# But it is kept here just in case I ever want to get into modules.
+RUN wget https://github.com/ninja-build/ninja/releases/download/v1.13.0/ninja-linux.zip
+RUN unzip ninja-linux.zip
+RUN cp ninja /usr/bin/ninja
+
+# Install latest version of cmake.
+# This was required for modules, but it's good to use the latest version anyways.
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+RUN echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
+RUN apt update
+RUN apt install -y cmake
+
+# Install newer version of clang-format & clangd
+# We cannot install version 21 of clangd, because it has a bug where it thinks private types cannot be used inside friend classes.
+# So we have to settle with version 20 ¯\_(ツ)_/¯
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
-RUN ./llvm.sh 19
-RUN apt install -y clang-format-19 clangd-19
+RUN ./llvm.sh 20
+RUN apt install -y clang-format-20 clangd-20
 RUN rm llvm.sh
 
 # Change the user
 USER user
-
-# ENV PATH="$PATH:/workspaces/OAlpha-flight-software/toolchain/bin"
-# ENV TRISKEL_LIBPATH="/workspaces/OAlpha-flight-software/toolchain/lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+dp/softfp"
-

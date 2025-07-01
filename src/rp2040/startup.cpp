@@ -4,13 +4,12 @@
  * Description:
  */
 
+#include <cstring>
 #include <utility>
 
 #include "pico/system_definitions.hpp"
-#include "rp2040/registers/list/xip_ctrl.hpp"
-#include "rp2040/registers/types.hpp"
-// #include "rp2040_registers.hpp"
-#include "rp2040_vector_table.hpp"
+#include "rp2040/registers/registers.hpp"
+#include "vector_table.hpp"
 
 /* External symbols provided by linker. */
 extern const uint32_t ld_flash_text_start;
@@ -64,16 +63,23 @@ extern "C" /* Required to avoid name mangling for Reset handler and entry point 
  */
 void Reset_handler(void)
 {
-    using namespace rp2040::registers;
+    namespace xip  = rp2040::registers::xip;
+    namespace test = rp2040::registers::test;
     // TODO: set up clocks and PLLs
     // TODO: some other initialisation?
     // TODO: set up QSPI for better XIP --> put .text in flash --> only put small section in SRAM?
-    xip::ctrl::clear_field<xip::ctrl::err_badwrite>();
-    xip::ctrl::set_field<xip::test>(true);
-    auto b = xip::ctrl::get_field<xip::ctrl::en>();
-    xip::ctrl::set_field<xip::ctrl::power_down>(b);
-    xip::ctrl::set_fields<xip::ctrl::power_down, xip::ctrl::err_badwrite>(b, b);
-    xip::ctrl::set(0);
+    xip::ctrl::clear();
+    xip::ctrl::set(xip::ctrl::get());
+    xip::ctrl::power_down::clear();
+    // xip::ctrl::power_down::set(xip::ctrl::err_badwrite::get());
+    // xip::ctrl::en::clear();
+    // xip::ctrl::en::set(xip::ctrl::en::get());
+    xip::ctrl::err_badwrite::clear();
+    // xip::ctrl::err_badwrite::set(xip::ctrl::err_badwrite::get());
+
+    xip::ctrl::set_fields<xip::ctrl::power_down, xip::ctrl::err_badwrite>(true, false);
+    test::test_reg::test_field::set(test::test_reg::test_field::value::this_is_a_value);
+
 
     /* Loop over addresses of constructors and call each one. Copied from the Pico SDK.
      * Constructors are called as late as possible to provide the widest constructor functionality.
@@ -100,7 +106,7 @@ void Reset_handler(void)
  * Must be naked, otherwise tries to use the stack pointer (which is not yet initialised).
  * Has its own optimisation level, as other optimisation levels could cause the code to go beyond the 252 byte limit.
  */
-__attribute__((naked, optimize("Os"), section(".flash_second_stage.entry_point"))) void
+__attribute__((naked, optimize(RP2040_STARTUP_OPT_LEVEL), section(".flash_second_stage.entry_point"))) void
 rp2040_startup_flash_second_stage(void)
 {
     /* Disable SSI to allow configuration. */

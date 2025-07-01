@@ -18,7 +18,7 @@
             ],
             "settings": {
                 "C_Cpp.intelliSenseEngine": "disabled",
-                "clangd.path": "clangd-19",
+                "clangd.path": "clangd-20",
                 "clangd.arguments": [
                     "--log=verbose",
                     "--pretty",

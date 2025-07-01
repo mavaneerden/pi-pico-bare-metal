@@ -1,28 +1,145 @@
-# cmake_minimum_required(VERSION 3.22.1) # Require minimum version to avoid problems with earlier versions.
+cmake_minimum_required(VERSION 3.28)
+project(picobaremetal
+    VERSION 0.1.0
+    DESCRIPTION "Baremetal framework for the Raspberry Pi Pico"
+    LANGUAGES CXX)
 
-# ##### SPECIFY DIRECTORIES #####
-# set(LIB_SRC_DIR ${CMAKE_SOURCE_DIR}/src) # Specify library source directory.
-# set(LIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include) # Specify library source directory.
-# set(EXAMPLES_DIR ${CMAKE_SOURCE_DIR}/examples) # Specify examples directory.
-# set(CMAKE_DIR ${CMAKE_SOURCE_DIR}/cmake) # Specify cmake directory.
-# set(LINKER_DIR ${CMAKE_SOURCE_DIR}/linker) # Specify linker directory.
-# set(LIBS_DIR ${CMAKE_SOURCE_DIR}/libs) # Specify libs directory.
+set(PACKAGE_NAME ${PROJECT_NAME})
+set(LIB_TARGET ${PROJECT_NAME})
+
+add_library(${LIB_TARGET} STATIC)
+
+# include(cmake/utils.cmake)
+include(GNUInstallDirs)
+
+######### OPTIONS #########
+option(PICO_BAREMETAL_BUILD_TESTS "Build ${LIB_TARGET} tests" OFF)
+option(PICO_BAREMETAL_BUILD_EXAMPLES "Build ${LIB_TARGET} examples" OFF)
+option(PICO_BAREMETAL_INSTALL "Generate target for installing ${LIB_TARGET}"
+    ${PROJECT_IS_TOP_LEVEL})
+set(PICO_BAREMETAL_INSTALL_CMAKEDIR
+    "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake" CACHE STRING
+    "Install path for ${LIB_TARGET} package-related CMake files")
 
 
-# set(LINKER_SCRIPT ${LINKER_DIR}/rp2040_linker_script.ld)
+######### HIDE NON-API SYMBOLS #########
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 
-# ##### SPECIFY TOOLCHAIN FILE #####
-# set(CMAKE_TOOLCHAIN_FILE ${CMAKE_DIR}/toolchain.cmake) # Set toolchain file to define compiler settings.
+######### GENERATE EXPORT HEADER #########
+include(GenerateExportHeader)
+set(export_file_name "export_static.h")
+set(export_file_path include/${LIB_TARGET}/${export_file_name})
+generate_export_header(${LIB_TARGET} EXPORT_FILE_NAME ${export_file_path})
 
-# ##### CREATE PROJECT #####
-# project(pi-pico-bare-metal-example VERSION 0.1) # Declare project.
-# enable_language(CXX) # Set project language to C++.
+######### ADD SOURCES #########
+if(${PICO_BAREMETAL_BUILD_EXAMPLES})
+    add_subdirectory(examples)
+endif()
 
-# #### ADD LIBS ####
-# # add_subdirectory(${LIBS_DIR})
+if(${PICO_BAREMETAL_BUILD_TESTS})
+    add_subdirectory(tests)
+endif()
 
-# ##### ADD LIBRARY SUB DIRECTORY #####
-# add_subdirectory(${LIB_SRC_DIR})
+add_subdirectory(src)
 
-# ##### ADD ALL EXAMPLES #####
-# add_subdirectory(${EXAMPLES_DIR})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
+
+list(APPEND PUBLIC_HEADERS
+    "${CMAKE_CURRENT_BINARY_DIR}/${export_file_path}")
+list(APPEND SOURCES
+    "${CMAKE_CURRENT_BINARY_DIR}/${export_file_path}")
+
+######### INITIALISE LIBRARY #########
+# Set minimum standard library to C++23.
+target_compile_features(${LIB_TARGET} PUBLIC cxx_std_23)
+
+target_sources(${LIB_TARGET} PRIVATE ${SOURCES})
+
+target_include_directories(${LIB_TARGET}
+    PUBLIC
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+    PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+)
+
+target_compile_definitions(${LIB_TARGET} PRIVATE
+    $<$<CONFIG:Debug>:RP2040_STARTUP_OPT_LEVEL="-Og">
+    $<$<AND:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>,$<CONFIG:MinSizeRel>>:RP2040_STARTUP_OPT_LEVEL="-Os">
+)
+
+set(PICO_BAREMETAL_LINKER_DIR ${CMAKE_CURRENT_LIST_DIR}/linker)
+set(PICO_BAREMETAL_LINKER_SCRIPT rp2040_linker_script.ld)
+set(COMPILE_FLAGS_DEBINFO
+    -ggdb3       # Max debug info for gdb
+)
+set(COMPILE_FLAGS_DEBUG
+    -Og          # -O0 does not inline any functions, so we should use -Og
+)
+target_compile_options(${LIB_TARGET} PRIVATE
+    $<BUILD_INTERFACE:
+        -nostartfiles                   # Do not use the "normal" startup files
+        --specs=nano.specs              # Disable system calls, they must be implemented manually
+        -fstack-usage                   # Creates file that states max stack usage per function
+        -ffreestanding                  # Directs compiler to assume standard functions don't have their normal definition (e.g. printf)
+        -ffunction-sections             # Make every function have its own section, allows the linker to remove that section if the function is not used together with --gc-sections in the linker
+        -fdata-sections                 # Same as -ffunction-sections, but with variables instead of functions
+        -fno-exceptions                 # No exceptions in code
+        -fno-common                     # Catches duplicate symbols at link time
+        # WARNINGS (assumes GCC)
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wformat=2
+        -Wformat-truncation
+        -Wformat-overflow
+        -Wconversion
+        -Wnon-virtual-dtor
+        -Wold-style-cast
+        -Wunused
+        -Woverloaded-virtual
+        -Wsign-conversion
+        -Wmisleading-indentation
+        -Wduplicated-cond
+        -Wduplicated-branches
+        -Wlogical-op
+        -Wnull-dereference
+        -Wuseless-cast
+        -Wdouble-promotion
+        $<$<CONFIG:Debug>:${COMPILE_FLAGS_DEBUG}>
+        $<$<CONFIG:Debug,RelWithDebInfo>:${COMPILE_FLAGS_DEBINFO}>
+        -Wl,--gc-sections                   # Remove unused linker sections
+        -Wl,-static                         # Does not depend on dynamic run-time libraries
+        -L ${PICO_BAREMETAL_LINKER_DIR}
+        -T ${PICO_BAREMETAL_LINKER_SCRIPT}
+    >
+)
+
+set_target_properties(${LIB_TARGET} PROPERTIES
+    PUBLIC_HEADER "${PUBLIC_HEADERS}"
+    LINKER_LANGUAGE CXX
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    VERSION ${PROJECT_VERSION}
+)
+
+######### INSTALL LIBRARY #########
+include(GNUInstallDirs)
+
+set(CONFIG_FILE PicoBaremetalConfig)
+
+if(PICO_BAREMETAL_INSTALL AND NOT CMAKE_SKIP_INSTALL_RULES)
+install(TARGETS ${LIB_TARGET} EXPORT ${CONFIG_FILE}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${LIB_TARGET}
+)
+export(TARGETS
+        ${LIB_TARGET}
+    NAMESPACE pico-baremetal::
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.cmake"
+)
+install(EXPORT
+        ${CONFIG_FILE}
+    DESTINATION ${PICO_BAREMETAL_INSTALL_CMAKEDIR}
+    NAMESPACE YourPackage::
+)
+endif()

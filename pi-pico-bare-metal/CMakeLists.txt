@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.28)
 
 project(pi-pico-bare-metal VERSION 0.1) # Declare project.
 enable_language(CXX) # Set project language to C++.

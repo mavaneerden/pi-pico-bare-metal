@@ -9,16 +9,14 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 rm -rf install
 mkdir -p build
-cd build
 
 # Invoke CMake.
-cmake \
+cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=$1 \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DTOOLCHAIN_BIN_PATH=$SCRIPT_DIR/../toolchain/bin/ \
     -DCMAKE_TOOLCHAIN_FILE=$SCRIPT_DIR/../cmake/toolchain.cmake \
-    -DCMAKE_INSTALL_PREFIX:PATH=$SCRIPT_DIR/install \
-    ..
+    -DCMAKE_INSTALL_PREFIX:PATH=$SCRIPT_DIR/install
 
 # Make all examples.
-cmake --build . --target install --config $1
+cmake --build build --target install --config $1 -j

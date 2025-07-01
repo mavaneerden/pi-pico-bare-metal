@@ -11,17 +11,32 @@ Diagnostics:
       bugprone-*,
       modernize-*,
       readability-*,
-      modernize-use-nodiscard
+      google-*,
+      misc-*,
+      performance-*
+    ]
+    Remove: [
+      performance-enum-size,   # Size gain is very minimal
+      google-readability-todo, # I don't want to have to write authors at every TODO >:(
+      misc-misplaced-const     # Sometimes thinks `const int*` is the same as `int * const`
     ]
     FastCheckFilter: None
 Hover:
   ShowAKA: true
 
 ---
-If:
-  PathMatch: .*/pi-pico-bare-metal/.*
 CompileFlags:
-  CompilationDatabase: pi-pico-bare-metal/build
+  CompilationDatabase: build/debug/
 ---
 CompileFlags:
-  Add: [-I/workspaces/repository/toolchain/arm-none-eabi/include, -I/workspaces/repository/toolchain/arm-none-eabi/include/c++/14.2.1, -I/workspaces/repository/toolchain/arm-none-eabi/include/c++/14.2.1/arm-none-eabi/thumb/nofp]
+  Add: [
+    -I/workspaces/repository/toolchain/arm-none-eabi/include,
+    -I/workspaces/repository/toolchain/arm-none-eabi/include/c++/14.2.1,
+    -I/workspaces/repository/toolchain/arm-none-eabi/include/c++/14.2.1/arm-none-eabi/thumb/nofp,
+    -Weverything,
+    -Wno-c++98-compat,
+    -Wno-c++98-compat-pedantic,
+    -Wno-c++20-compat,
+    -Wno-documentation,
+    -Wno-missing-prototypes
+  ]

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cmakepath=/usr/bin/cmake
-
 if [[ $1 != "Debug" && $1 != "Release" ]]; then
     echo "First argument must be 'Debug' or 'Release'."
     exit

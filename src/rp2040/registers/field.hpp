@@ -1,12 +1,11 @@
 #pragma once
 
-#pragma once
-
 #include <concepts>
+#include <cstdint>
 #include <type_traits>
 
-#include "access_modifiers.hpp"
-#include "types.hpp"
+#include "rp2040/registers/access_modifiers.hpp"
+#include "rp2040/registers/types.hpp"
 
 namespace rp2040::registers
 {
@@ -19,27 +18,45 @@ namespace rp2040::registers
  * @tparam LengthInBits     Length of the field in bits.
  */
 template<
+    typename Register,
     std::semiregular      ValueType,
     hw_register_address_t StartBit,
     hw_register_address_t LengthInBits,
-    typename AccessModifier>
-    requires access_modifiers::is_access_modifier<AccessModifier>
+    typename AccessModifierField,
+    uint64_t PassKeyField = 0ULL>
+    requires access_modifiers::is_access_modifier<AccessModifierField>
 class hw_register_field
 {
+    template<hw_register_address_t BaseAddress, hw_register_address_t Offset, typename AccessModifier, uint64_t PassKey>
+        requires access_modifiers::is_access_modifier<AccessModifier>
+    friend class hw_register;
+
 public:
-    /* Use decay_t here, it removes any references & const/volatile specifiers. */
-    using value_t           = std::decay_t<ValueType>;
-    using access_modifier_t = AccessModifier;
-
-    static constexpr auto START_BIT      = StartBit;
-    static constexpr auto LENGTH_IN_BITS = LengthInBits;
-
     hw_register_field()                                            = delete;
     hw_register_field(hw_register_field&&)                         = delete;
     hw_register_field(const hw_register_field&)                    = delete;
     auto operator=(hw_register_field&&) -> hw_register_field&      = delete;
     auto operator=(const hw_register_field&) -> hw_register_field& = delete;
     ~hw_register_field()                                           = delete;
+
+    /* Use decay_t here, it removes any references & const/volatile specifiers.
+     * This MUST be public, otherwise gcc will fail to compile.
+     * It thinks it cannot use a private type in a function parameter in a friend class.
+     * Clang and MSVC compile it fine, so it must be a bug in gcc (or gcc is the only one doing it right).
+     */
+    using value = std::decay_t<ValueType>;
+
+private:
+    static constexpr uint64_t PASS_KEY = 0x5C9BBF8A4E16A95DULL;
+    static_assert(PassKeyField == PASS_KEY, "Do not use the 'hw_register_field' class directly!");
+
+    using register_t = Register;
+
+    static constexpr auto START_BIT      = StartBit;
+    static constexpr auto LENGTH_IN_BITS = LengthInBits;
+
+    static constexpr auto IS_READABLE = access_modifiers::is_readable<AccessModifierField>;
+    static constexpr auto IS_WRITABLE = access_modifiers::is_writable<AccessModifierField>;
 
     /**
      * @brief Get the bitmask of the register field.
@@ -66,6 +83,26 @@ public:
 
         return (BITS >> RIGHT_SHIFT) << LEFT_SHIFT;
     }
+
+public:
+    [[nodiscard]] static auto get() -> value
+        requires IS_READABLE
+    {
+        return static_cast<value>((Register::get() & get_bitmask()) >> START_BIT);
+    }
+
+    static auto set(const value value)
+        requires IS_WRITABLE
+    {
+        const auto cleared_field = ~get_bitmask() & Register::get();
+        Register::set(((static_cast<hw_register_value_t>(value) << START_BIT) & get_bitmask()) | cleared_field);
+    }
+
+    static auto clear()
+        requires IS_WRITABLE
+    {
+        Register::set(~get_bitmask() & Register::get());
+    }
 };
 
 /* This struct is used for the is_field concept. */
@@ -75,11 +112,14 @@ struct is_hw_register_field : std::false_type
 
 /* This struct is used for the is_field concept. */
 template<
+    typename Register,
     std::semiregular      ValueType,
     hw_register_address_t StartBit,
     hw_register_address_t LengthInBits,
-    typename AccessModifier>
-struct is_hw_register_field<hw_register_field<ValueType, StartBit, LengthInBits, AccessModifier>> : std::true_type
+    typename AccessModifier,
+    uint64_t PassKey>
+struct is_hw_register_field<hw_register_field<Register, ValueType, StartBit, LengthInBits, AccessModifier, PassKey>> :
+    std::true_type
 {};
 
 /**
@@ -90,21 +130,7 @@ struct is_hw_register_field<hw_register_field<ValueType, StartBit, LengthInBits,
 template<typename FieldCandidate>
 concept is_field = is_hw_register_field<FieldCandidate>::value;
 
-template<typename Field>
-concept is_field_writable =
-    is_hw_register_field<Field>::value && access_modifiers::is_writable<typename Field::access_modifier_t>;
-
-template<typename Field>
-concept is_field_readable =
-    is_hw_register_field<Field>::value && access_modifiers::is_readable<typename Field::access_modifier_t>;
-
-/**
- * @brief Concept for checking if a field exists inside a register.
- *
- * @tparam Field Field to check.
- * @tparam Fields Fields inside the register.
- */
-template<typename Field, typename... Fields>
-concept field_exists = (std::same_as<Field, Fields> || ...);
+template<typename Field, typename Register>
+concept field_belongs_to_register = std::derived_from<typename Field::register_t, Register>;
 
 }  // namespace rp2040::registers
